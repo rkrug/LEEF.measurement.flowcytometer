@@ -1,4 +1,4 @@
-Package: LEEF.flowcytometer
+Package: LEEF.measurement.flowcytometer
 Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.0
@@ -7,7 +7,7 @@ Maintainer: Rainer M Krug <Rainer.Krug@uzh.ch>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: MIT + file LICENSE
-Depends: LEEF.Data
+Depends: R (>= 3.5.0), LEEF.Data
 Imports: R.utils, flowCore, tiff
 Encoding: UTF-8
 LazyData: true
