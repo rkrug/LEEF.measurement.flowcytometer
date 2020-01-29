@@ -25,7 +25,7 @@ pre_processor_flowcytometer <- function( input, output ) {
   message("\nProcessing flowcytometer...\n")
   setwd( file.path( input, "flowcytometer" ) )
   cmd <- "python"
-  arguments <- file.path( system.file(package = utils::packageName()), "tools", "accuri2fcs", "accuri2fcs", "accuri2fcs.py" )
+  arguments <- file.path( system.file(package = "LEEF.flowcytometer"), "accuri2fcs", "accuri2fcs", "accuri2fcs.py" )
   system2(
     command = cmd,
     args = arguments
