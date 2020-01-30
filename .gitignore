@@ -12,6 +12,13 @@
 .Rproj.user
 #
 
+## temp folder
+temp
+
+## Example Data Folder
+0.raw.data
+
+
 
 
 
