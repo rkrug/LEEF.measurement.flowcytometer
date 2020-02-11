@@ -17,6 +17,7 @@ pre_processor_flowcytometer <- function(
   input,
   output
 ) {
+
   ##
   message("\n########################################################\n")
   message("\nProcessing flowcytometer...\n")
@@ -26,34 +27,58 @@ pre_processor_flowcytometer <- function(
     setwd(oldwd)
   )
   ##
-  dir.create(
-    file.path(output, "flowcytometer"),
-    recursive = TRUE,
-    showWarnings = FALSE
-  )
+  tmp <- tempfile()
+  dir.create(tmp)
+  ##
   file.copy(
     from = file.path(input, "flowcytometer", "."),
-    to = file.path(output, "flowcytometer"),
+    to = tmp,
     recursive = TRUE
   )
-  ##
-  setwd( file.path( output, "flowcytometer" ) )
+
+
+# Convert from .c6 to .fcs ------------------------------------------------
+
+
+  setwd( file.path( tmp ) )
   cmd <- "python"
   arguments <- system.file(package = "LEEF.measurement.flowcytometer", "tools", "accuri2fcs", "accuri2fcs", "accuri2fcs.py" )
   system2(
     command = cmd,
-    args = arguments
+    args = arguments,
+    stdout = ifelse(
+      options()$LEEF.measurement.flowcytometer$debug,
+      "",
+      FALSE
+    )
   )
   unlink("*.c6")
+  ##
   fcs <- list.files(
-    path = file.path( input, "flowcytometer", "fcs" ),
+    path = file.path( tmp, "fcs" ),
     full.names = TRUE
   )
   file.rename(
     from = fcs,
     to = gsub( "/fcs/", "/", fcs )
   )
-  # unlink( file.path( input, "flowcytometer", "fcs" ), recursive = TRUE )
+  unlink( file.path( tmp, "fcs" ), recursive = TRUE )
+
+
+# Copy to final output ----------------------------------------------------
+
+
+  dir.create(
+    file.path(output, "flowcytometer"),
+    recursive = TRUE,
+    showWarnings = FALSE
+  )
+  file.copy(
+    from = file.path(tmp, "."),
+    to = file.path(output, "flowcytometer"),
+    recursive = TRUE
+  )
+
   message("done\n")
   message("\n########################################################\n")
 

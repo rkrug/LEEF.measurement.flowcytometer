@@ -2,10 +2,14 @@
 #'
 #' @return invisibly \code{TRUE} when completed successful
 #'
-#' @importFrom LEEF.Data add_pre_processor add_extractor
+
 #' @export
 #'
 register <- function() {
+  if (is.null(system.file(package = "LEEF.Data"))) {
+    stop("This function requres the package to be installed!")
+  }
+
   LEEF.Data::add_pre_processor( pre_processor_flowcytometer )
   LEEF.Data::add_extractor( extractor_flowcytometer)
 

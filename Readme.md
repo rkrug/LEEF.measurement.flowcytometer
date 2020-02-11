@@ -1,4 +1,4 @@
 README
 ================
 
-## Extraction and preparation of Bemovi data
+## Extraction and preparation of flowcytometer data

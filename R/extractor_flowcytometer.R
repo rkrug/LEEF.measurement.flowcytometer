@@ -14,9 +14,12 @@
 #'
 #' @export
 #'
-extractor_flowcytometer <- function( input, output ) {
-  cat("\n########################################################\n")
-  cat("Extracting flowcytometer...\n")
+extractor_flowcytometer <- function(
+  input,
+  output
+) {
+  message("\n########################################################\n")
+  message("Extracting flowcytometer...\n")
 
 # Based on flowcyt_1_c6_to_RData.R ----------------------------------------
   # Converting the Flowcytometer Output of bacterial abundances into a usable data frame
@@ -29,12 +32,13 @@ extractor_flowcytometer <- function( input, output ) {
   fcs_files <- list.files(
     path = fcs_path,
     pattern = "*.fcs",
+    recursive = TRUE,
     full.names = TRUE
   )
 
   if (length(fcs_files) == 0) {
-    cat("nothing to extract\n")
-    cat("\n########################################################\n")
+    message("nothing to extract\n")
+    message("\n########################################################\n")
     return(invisible(FALSE))
   }
 # check file sizes and delete empty wells ---------------------------------
@@ -216,7 +220,7 @@ extractor_flowcytometer <- function( input, output ) {
 # SAVE --------------------------------------------------------------------
 
   add_path <- file.path( output, "flowcytometer" )
-  dir.create( add_path )
+  dir.create( add_path, recursive = TRUE )
   saveRDS(
     object = flow.data,
     file = file.path(add_path, "flowcytometer.rds")
@@ -224,8 +228,8 @@ extractor_flowcytometer <- function( input, output ) {
 
 # Finalize ----------------------------------------------------------------
 
-  cat("done\n")
-  cat("\n########################################################\n")
+  message("done\n")
+  message("\n########################################################\n")
 
   invisible(TRUE)
 }

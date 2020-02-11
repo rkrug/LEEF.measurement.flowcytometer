@@ -3,4 +3,4 @@ title: "README"
 output: github_document
 ---
 
-## Extraction and preparation of Bemovi data
+## Extraction and preparation of flowcytometer data
