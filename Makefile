@@ -104,6 +104,13 @@ clean_check:
 
 ####
 
+drat: build
+	cd 
+	@Rscript -e "drat::insertPackage('./../$(PKGNAME)_$(PKGVERS).tar.gz', repodir = './../../drat/', commit = TRUE)"
+	cd ./../../drat/; git push origin gh-pages
+	
+####
+
 # check_rhub
 # 	@Rscript -e "rhub::check_for_cran(".")
 
