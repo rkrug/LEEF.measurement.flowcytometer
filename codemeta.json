@@ -1,0 +1,116 @@
+{
+  "@context": [
+    "https://doi.org/10.5063/schema/codemeta-2.0",
+    "http://schema.org"
+  ],
+  "@type": "SoftwareSourceCode",
+  "identifier": "LEEF.measurement.flowcytometer",
+  "description": "More about what it does (maybe more than one line)\n    Use four spaces when indenting paragraphs within the Description.",
+  "name": "LEEF.measurement.flowcytometer: What the Package Does (Title Case)",
+  "codeRepository": "https://github.com/LEEF-UZH/LEEF.measurement.flowcytometer",
+  "issueTracker": "https://github.com/LEEF-UZH/LEEF.measurement.flowcytometer/issues",
+  "license": "https://spdx.org/licenses/MIT",
+  "version": "0.5.1",
+  "programmingLanguage": {
+    "@type": "ComputerLanguage",
+    "name": "R",
+    "url": "https://r-project.org"
+  },
+  "runtimePlatform": "R version 4.0.2 (2020-06-22)",
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Rainer M.",
+      "familyName": "Krug",
+      "email": "Rainer.Krug@uzh.zch"
+    }
+  ],
+  "contributor": {},
+  "copyrightHolder": {},
+  "funder": {},
+  "maintainer": [
+    {
+      "@type": "Person",
+      "givenName": "Rainer M.",
+      "familyName": "Krug",
+      "email": "Rainer.Krug@uzh.zch"
+    }
+  ],
+  "softwareSuggestions": [
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "LEEF.Data",
+      "name": "LEEF.Data"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "testthat",
+      "name": "testthat",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=testthat"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "openssl",
+      "name": "openssl",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=openssl"
+    }
+  ],
+  "softwareRequirements": [
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "R",
+      "name": "R",
+      "version": ">= 3.5.0"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "R.utils",
+      "name": "R.utils",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=R.utils"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "flowCore",
+      "name": "flowCore",
+      "provider": {
+        "@id": "https://www.bioconductor.org",
+        "@type": "Organization",
+        "name": "BioConductor",
+        "url": "https://www.bioconductor.org"
+      },
+      "sameAs": "https://bioconductor.org/packages/release/bioc/html/flowCore.html"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "tiff",
+      "name": "tiff",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=tiff"
+    }
+  ],
+  "readme": "https://github.com/LEEF-UZH/LEEF.measurement.flowcytometer/blob/master/Readme.md",
+  "fileSize": "0KB"
+}

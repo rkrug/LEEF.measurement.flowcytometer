@@ -39,10 +39,11 @@ pre_processor_flowcytometer <- function(
 
 # Convert from .c6 to .fcs ------------------------------------------------
 
-
+  oldwd <- getwd()
   setwd( file.path( tmp ) )
+
   cmd <- "python"
-  arguments <- system.file(package = "LEEF.measurement.flowcytometer", "tools", "accuri2fcs", "accuri2fcs", "accuri2fcs.py" )
+  arguments <- system.file(package = "LEEF.measurement.flowcytometer", "accuri2fcs", "accuri2fcs", "accuri2fcs.py" )
   system2(
     command = cmd,
     args = arguments,
@@ -62,6 +63,9 @@ pre_processor_flowcytometer <- function(
     from = fcs,
     to = gsub( "/fcs/", "/", fcs )
   )
+
+  setwd(oldwd)
+
   unlink( file.path( tmp, "fcs" ), recursive = TRUE )
 
 

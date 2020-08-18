@@ -9,5 +9,8 @@
 ^temp$
 
 ## Example Data Folder
-^inst/0.raw.data$
-^inst/1.pre-processed.data$
+^0\.raw\.data$
+^1\.pre-processed\.data$
+^2\.extracted\.data$
+
+^codemeta\.json$
