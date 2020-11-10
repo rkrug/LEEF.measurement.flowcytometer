@@ -29,6 +29,11 @@ extractor_flowcytometer <- function(
 # Get fcs file names ------------------------------------------------------
 
   fcs_path <- file.path( input, "flowcytometer" )
+  fcs_path <- list.dirs(
+    fcs_path,
+    full.names = TRUE,
+    recursive = FALSE
+  )
   fcs_files <- list.files(
     path = fcs_path,
     pattern = "*.fcs",
@@ -36,32 +41,50 @@ extractor_flowcytometer <- function(
     full.names = TRUE
   )
 
+  if (length(fcs_path) != 1) {
+    message("Exactly one directory is expected in the flowcytometer folder\n")
+    message("\n########################################################\n")
+    return(invisible(FALSE))
+  }
+
   if (length(fcs_files) == 0) {
     message("nothing to extract\n")
     message("\n########################################################\n")
     return(invisible(FALSE))
   }
+
 # check file sizes and delete empty wells ---------------------------------
 
-  fcs_files <- sapply(
-    fcs_files,
-    function(fn) {
-      result <-  TRUE
-      if ( file.info(fn)[["size"]] <= 3000 ) {
-        file.remove(fn)
-        result <- NULL
-      }
-      invisible(fn)
-    }
-  )
-  names(fcs_files) <- NULL
-  fcs_files <- fcs_files[!is.null(fcs_files)]
+  fcs_files <- fcs_files[ file.info(fcs_files)[,"size"] > 3000 ]
 
 # read flowSet automatically ----------------------------------------------
+
+  # Due to changes in flowcore (simplifications) the code should be changed.
+  # See https://support.bioconductor.org/p/p132747/#p132763 for details
+
+  # Old Code
+  # fsa <- flowCore::read.flowSet(
+  #   path = fcs_path,
+  #   transformation = FALSE,
+  #   phenoData = list(
+  #     filename = "#SAMPLE",
+  #     sample = "$SMNO",
+  #     date = "$DATE",
+  #     volume = "$VOL",
+  #     proj = "$PROJ"
+  #   )
+  # )
+
+  ### begin New code from link above
+  # read fcs
   fsa <- flowCore::read.flowSet(
-    path = fcs_path,
-    transformation = FALSE,
-    phenoData = list(
+    path = fcs_path
+  )
+
+  #extract keyword list
+  kw <- flowCore::keyword(
+    fsa,
+    keyword = list(
       filename = "#SAMPLE",
       sample = "$SMNO",
       date = "$DATE",
@@ -69,6 +92,43 @@ extractor_flowcytometer <- function(
       proj = "$PROJ"
     )
   )
+
+  ## see https://stackoverflow.com/a/64769573/632423
+  cols <- c(
+    "filename.#SAMPLE",
+    "sample.$SMNO",
+    "date.$DATE",
+    "volume.$VOL",
+    "proj.$PROJ"
+  )
+
+  colsnms <- c(
+    "filename",
+    "sample",
+    "date",
+    "volume",
+    "proj"
+  )
+
+  kw <- do.call(
+    rbind,
+    lapply(
+      kw,
+      function(y){
+        setNames(y[cols], cols)
+      }
+    )
+  )
+
+  colnames(kw) <- colsnms
+  ##
+
+
+  #assign it to pdata of fs
+  flowCore::pData(fsa) <- as.data.frame(kw)
+  # pData(fsa)
+
+  ### end new
 
 # CREATE FLOW DATA FRAME AND FILL WITH UNGATED COUNT ----------------------
 
@@ -112,7 +172,7 @@ extractor_flowcytometer <- function(
   # aTrans <- truncateTransform( "truncate at 1", a = 1 )
 
   # exclude values < 1
-  fsa <- transform(
+  fsa <- flowCore::transform(
     fsa,
     `FL1-H` = flowCore::truncateTransform( "truncate at 1", a = 1 )(`FL1-H`),
     `FL3-H` = flowCore::truncateTransform( "truncate at 1", a = 1 )(`FL3-H`),
@@ -121,7 +181,7 @@ extractor_flowcytometer <- function(
     `Width` = flowCore::truncateTransform( "truncate at 1", a = 1 )(`Width`)
   )
   # log transform
-  fsa <- transform(
+  fsa <- flowCore::transform(
     fsa,
     `FL1-H` = flowCore::logTransform( transformationId = "log10-transformation", logbase = 10, r = 1, d = 1 )(`FL1-H`),
     `FL3-H` = flowCore::logTransform( transformationId = "log10-transformation", logbase = 10, r = 1, d = 1 )(`FL3-H`),
