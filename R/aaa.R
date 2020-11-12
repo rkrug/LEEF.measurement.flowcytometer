@@ -1,4 +1,4 @@
-
+.FLOWCYTOMETER_CACHE <- new.env(FALSE, parent = globalenv())
 
 .onLoad <- function(lib, pkg) {
   opt <-  list(
