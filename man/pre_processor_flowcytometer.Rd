@@ -15,5 +15,5 @@ pre_processor_flowcytometer(input, output)
 invisibly \code{TRUE} when completed successful
 }
 \description{
-Convert all \code{.c6} files in \code{flowcytometrie} folder to \code{.fcs} files in output folder
+Just copy all files
 }
