@@ -279,8 +279,10 @@ extractor_flowcytometer <- function(
 
 # SAVE --------------------------------------------------------------------
 
+  names(flow.data) <- tolower(names(flow.data))
+
   add_path <- file.path( output, "flowcytometer" )
-  dir.create( add_path, recursive = TRUE )
+  dir.create( add_path, recursive = TRUE, showWarnings = FALSE )
   saveRDS(
     object = flow.data,
     file = file.path(add_path, "flowcytometer.rds")
