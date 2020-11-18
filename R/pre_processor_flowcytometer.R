@@ -27,6 +27,11 @@ pre_processor_flowcytometer <- function(
     to = file.path(output, "flowcytometer"),
     recursive = TRUE
   )
+  file.copy(
+    from = file.path(input, "sample_metadata.yml"),
+    to = file.path(output, "sample_metadata.yml")
+  )
+
   ##
   message("done\n")
   message("\n########################################################\n")

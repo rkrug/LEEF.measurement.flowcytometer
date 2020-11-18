@@ -287,6 +287,10 @@ extractor_flowcytometer <- function(
     object = flow.data,
     file = file.path(add_path, "flowcytometer.rds")
   )
+  file.copy(
+    from = file.path(input, "sample_metadata.yml"),
+    to = file.path(output, "sample_metadata.yml")
+  )
 
 # Finalize ----------------------------------------------------------------
 
