@@ -11,7 +11,8 @@
 #' @return invisibly \code{TRUE} when completed successful
 #'
 #' @importFrom flowCore read.flowSet pData phenoData exprs logTransform truncateTransform transform rectangleGate
-#'
+#' @importFrom  yaml read_yaml
+#' @importFrom  stats setNames
 #' @export
 #'
 extractor_flowcytometer <- function(
@@ -115,7 +116,7 @@ extractor_flowcytometer <- function(
     lapply(
       kw,
       function(y){
-        setNames(y[cols], cols)
+        stats::setNames(y[cols], cols)
       }
     )
   )
@@ -276,13 +277,14 @@ extractor_flowcytometer <- function(
 
   ## Here some metadata was added - maybe later.
 
-
 # SAVE --------------------------------------------------------------------
-
-  names(flow.data) <- tolower(names(flow.data))
 
   add_path <- file.path( output, "flowcytometer" )
   dir.create( add_path, recursive = TRUE, showWarnings = FALSE )
+
+  timestamp <- yaml::read_yaml(file.path(input, "sample_metadata.yml"))$timestamp
+  flow.data <- cbind(timestamp = timestamp, flow.data)
+
   saveRDS(
     object = flow.data,
     file = file.path(add_path, "flowcytometer.rds")

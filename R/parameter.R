@@ -8,13 +8,15 @@
 #'
 #' @return the (new) value of the argument
 #'
+#' @importFrom	utils tail
 #' @export
+#'
 #'
 #' @examples
 par_template <- function(value) {
   parName <- match.call()[[1]]
   parName <- as.character(parName)
-  parName <- tail(parName, 1)
+  parName <- utils::tail(parName, 1)
   parName <- gsub("par_", "", parName)
   if ( missing(value) ) {
     if (!exists(parName, envir = .FLOWCYTOMETER_CACHE, inherits = FALSE)) {
@@ -62,8 +64,9 @@ load_parameter <- function(file = "parameter.yaml") {
 
 #' Print the flowcytometer parameter
 #'
+#' @param echo if \code{TRUE} print the parameter, if \code{FALSE}  just return them as list
 #' @param print_as_yaml Print in yaml formated text; \code{~} stands for NULL
-#' @param should anything be printed (\code{TRUE}) or just a list returned (\code{FALSE})
+#'
 #' @return invisible returns list of parameter for further processing
 #' @importFrom yaml as.yaml
 #' @export

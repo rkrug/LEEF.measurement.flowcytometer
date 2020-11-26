@@ -9,6 +9,7 @@
 #'   \code{TRUE} if moved, \code{FALSE} if an error occured. Details of the eror
 #'   re in the error files in the \code{input/flowcytometer} directory.
 #' @importFrom parallel mclapply
+#' @importFrom utils capture.output
 #' @export
 #'
 add_new_data <- function(input, output) {
@@ -56,7 +57,7 @@ add_new_data <- function(input, output) {
         {
           if (file.exists(processing)) {
             unlink(processing)
-            capture.output(print(result), file = error)
+            utils::capture.output(print(result), file = error)
           }
         }
       )

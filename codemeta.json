@@ -22,7 +22,7 @@
       "@type": "Person",
       "givenName": "Rainer M.",
       "familyName": "Krug",
-      "email": "Rainer.Krug@uzh.zch"
+      "email": "Rainer.Krug@uzh.ch"
     }
   ],
   "contributor": {},
@@ -33,7 +33,7 @@
       "@type": "Person",
       "givenName": "Rainer M.",
       "familyName": "Krug",
-      "email": "Rainer.Krug@uzh.zch"
+      "email": "Rainer.Krug@uzh.ch"
     }
   ],
   "softwareSuggestions": [
@@ -105,6 +105,18 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=tiff"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "yaml",
+      "name": "yaml",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=yaml"
     }
   ],
   "readme": "https://github.com/LEEF-UZH/LEEF.measurement.flowcytometer/blob/master/Readme.md",
