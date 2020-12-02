@@ -285,9 +285,10 @@ extractor_flowcytometer <- function(
   timestamp <- yaml::read_yaml(file.path(input, "sample_metadata.yml"))$timestamp
   flow.data <- cbind(timestamp = timestamp, flow.data)
 
-  saveRDS(
-    object = flow.data,
-    file = file.path(add_path, "flowcytometer.rds")
+  write.csv(
+    flow.data,
+    file = file.path(add_path, "flowcytometer.csv"),
+    row.names = FALSE
   )
   file.copy(
     from = file.path(input, "sample_metadata.yml"),
