@@ -1,6 +1,5 @@
-#' Preprocessor flowcytometer data
+#' Extractor flowcytometer data
 #'
-#' Convert all \code{.fxs} files in \code{flowcytometrie} folder to \code{data.frame} and save as \code{.rds} file.
 #'
 #' This function is extracting data to be added to the database (and therefore make accessible for further analysis and forecasting)
 #' from \code{.fcs} files.
@@ -86,43 +85,44 @@ extractor_flowcytometer <- function(
   kw <- flowCore::keyword(
     fsa,
     keyword = list(
-      filename = "#SAMPLE",
-      sample = "$SMNO",
-      date = "$DATE",
+      # filename = "#SAMPLE",
+      sample = "$WELLID", ## "$SMNO",
+      # date = "$DATE",
       volume = "$VOL",
-      proj = "$PROJ"
+      proj = "$PROJ" ## needed?????
     )
   )
+  kw <- cbind(filename = rownames(kw), kw)
 
-  ## see https://stackoverflow.com/a/64769573/632423
-  cols <- c(
-    "filename.#SAMPLE",
-    "sample.$SMNO",
-    "date.$DATE",
-    "volume.$VOL",
-    "proj.$PROJ"
-  )
-
-  colsnms <- c(
-    "filename",
-    "sample",
-    "date",
-    "volume",
-    "proj"
-  )
-
-  kw <- do.call(
-    rbind,
-    lapply(
-      kw,
-      function(y){
-        stats::setNames(y[cols], cols)
-      }
-    )
-  )
-
-  colnames(kw) <- colsnms
-  ##
+  # ## see https://stackoverflow.com/a/64769573/632423
+  # cols <- c(
+  #   "filename.#SAMPLE",
+  #   "sample.$SMNO",
+  #   "date.$DATE",
+  #   "volume.$VOL",
+  #   "proj.$PROJ"
+  # )
+  #
+  # colsnms <- c(
+  #   "filename",
+  #   "sample",
+  #   "date",
+  #   "volume",
+  #   "proj"
+  # )
+  #
+  # kw <- do.call(
+  #   rbind,
+  #   lapply(
+  #     kw,
+  #     function(y){
+  #       stats::setNames(y[cols], colsnms)
+  #     }
+  #   )
+  # )
+  #
+  # colnames(kw) <- colsnms
+  # ##
 
 
   #assign it to pdata of fs

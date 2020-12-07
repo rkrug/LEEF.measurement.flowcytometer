@@ -2,7 +2,7 @@
 % Please edit documentation in R/extractor_flowcytometer.R
 \name{extractor_flowcytometer}
 \alias{extractor_flowcytometer}
-\title{Preprocessor flowcytometer data}
+\title{Extractor flowcytometer data}
 \usage{
 extractor_flowcytometer(input, output)
 }
@@ -15,9 +15,6 @@ extractor_flowcytometer(input, output)
 invisibly \code{TRUE} when completed successful
 }
 \description{
-Convert all \code{.fxs} files in \code{flowcytometrie} folder to \code{data.frame} and save as \code{.rds} file.
-}
-\details{
 This function is extracting data to be added to the database (and therefore make accessible for further analysis and forecasting)
 from \code{.fcs} files.
 }
