@@ -163,7 +163,8 @@ extractor_flowcytometer <- function(
   )
 
   # standardize naming
-  flow.data <- flow.data[, c("filename","sample","date","volume","total.counts","tot_density_perml","specname")]
+  # flow.data <- flow.data[, c("filename","sample","date","volume","total.counts","tot_density_perml","specname")]
+  flow.data <- flow.data[, c("sample","volume","total.counts","tot_density_perml","specname")]
 
   rownames(flow.data) <- NULL
 
@@ -259,18 +260,18 @@ extractor_flowcytometer <- function(
       stop = 3
     )
   )
-  flow.data[["date"]] <- format(
-    as.Date(
-      flow.data$date,
-      "%d-%b-%Y"
-    ),
-    "%Y-%m-%d"
-  )
-  flow.data <- flow.data[ order(
-    flow.data$date,
-    flow.data$sample_letter,
-    flow.data$sample_number
-  ),]
+  # flow.data[["date"]] <- format(
+  #   as.Date(
+  #     flow.data$date,
+  #     "%d-%b-%Y"
+  #   ),
+  #   "%Y-%m-%d"
+  # )
+  # flow.data <- flow.data[ order(
+  #   flow.data$date,
+  #   flow.data$sample_letter,
+  #   flow.data$sample_number
+  # ),]
 
 
 # Based on flowcyt_2_RData_to_final_data.R --------------------------------
