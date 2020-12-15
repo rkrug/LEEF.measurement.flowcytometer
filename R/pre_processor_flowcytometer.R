@@ -29,7 +29,7 @@ pre_processor_flowcytometer <- function(
   )
   file.copy(
     from = file.path(input, "sample_metadata.yml"),
-    to = file.path(output, "sample_metadata.yml")
+    to = file.path(output, "flowcytometer", "sample_metadata.yml")
   )
 
   ##

@@ -12,6 +12,7 @@
 #' @importFrom flowCore read.flowSet pData phenoData exprs logTransform truncateTransform transform rectangleGate
 #' @importFrom  yaml read_yaml
 #' @importFrom  stats setNames
+#' @importFrom utils write.csv
 #' @export
 #'
 extractor_flowcytometer <- function(
@@ -283,17 +284,29 @@ extractor_flowcytometer <- function(
   add_path <- file.path( output, "flowcytometer" )
   dir.create( add_path, recursive = TRUE, showWarnings = FALSE )
 
-  timestamp <- yaml::read_yaml(file.path(input, "sample_metadata.yml"))$timestamp
-  flow.data <- cbind(timestamp = timestamp, flow.data)
+  timestamp <- yaml::read_yaml(file.path(input,  "flowcytometer", "sample_metadata.yml"))$timestamp
 
-  write.csv(
+  ##########################################################
+  ##########################################################
+  ### DUMMY - REPLACE !!! ##################################
+  bottle <- as.integer(runif(nrow(flow.data)) * 33)			####
+  ##########################################################
+  ##########################################################
+
+  flow.data <- cbind(
+  	timestamp = timestamp,
+  	bottle = bottle,
+  	flow.data
+  )
+
+  utils::write.csv(
     flow.data,
     file = file.path(add_path, "flowcytometer.csv"),
     row.names = FALSE
   )
   file.copy(
-    from = file.path(input, "sample_metadata.yml"),
-    to = file.path(output, "sample_metadata.yml")
+    from = file.path(input, "flowcytometer", "sample_metadata.yml"),
+    to = file.path(output, "flowcytometer", "sample_metadata.yml")
   )
 
 # Finalize ----------------------------------------------------------------
