@@ -23,6 +23,13 @@ pre_processor_flowcytometer <- function(
     showWarnings = FALSE
   )
   file.copy(
+  	file.path( input, "..", "00.general.parameter", "." ),
+  	file.path( output, "flowcytometer" ),
+  	recursive = TRUE,
+  	overwrite = TRUE
+  )
+
+  file.copy(
     from = file.path(input, "flowcytometer", "."),
     to = file.path(output, "flowcytometer"),
     recursive = TRUE
