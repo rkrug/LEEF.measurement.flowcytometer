@@ -16,6 +16,22 @@ pre_processor_flowcytometer <- function(
   ##
   message("\n########################################################\n")
   message("\nProcessing flowcytometer...\n")
+
+  ##
+  processing <- file.path(normalizePath(output), "bemovi", paste0("PRE-PROCESSING.FLOWCYTOMETER", ".PROCESSING"))
+  error <- file.path(normalizePath(output), "bemovi", paste0("ERROR.PRE-PROCESSING.FLOWCYTOMETER", ".ERROR"))
+  on.exit(
+    {
+      if (file.exists(processing)) {
+        unlink(processing)
+        file.create(error)
+      }
+    }
+  )
+  file.create( processing )
+  ##
+
+
   ##
   dir.create(
     file.path(output, "flowcytometer"),
@@ -34,12 +50,10 @@ pre_processor_flowcytometer <- function(
     to = file.path(output, "flowcytometer"),
     recursive = TRUE
   )
-  file.copy(
-    from = file.path(input, "sample_metadata.yml"),
-    to = file.path(output, "flowcytometer", "sample_metadata.yml")
-  )
 
   ##
+
+  unlink(processing)
   message("done\n")
   message("\n########################################################\n")
   ##
