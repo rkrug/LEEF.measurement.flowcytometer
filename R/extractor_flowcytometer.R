@@ -23,8 +23,8 @@ extractor_flowcytometer <- function(
   message("Extracting flowcytometer...\n")
 
   ##
-  processing <- file.path(normalizePath(output), "bemovi", paste0("EXTRACTING.FLOWCYTOMETER", ".PROCESSING"))
-  error <- file.path(normalizePath(output), "bemovi", paste0("ERROR.EXTRACTING.FLOWCYTOMETER", ".ERROR"))
+  processing <- file.path(normalizePath(output), "flowcytometer", paste0("EXTRACTING.FLOWCYTOMETER", ".PROCESSING"))
+  error <- file.path(normalizePath(output), "flowcytometer", paste0("ERROR.EXTRACTING.FLOWCYTOMETER", ".ERROR"))
   on.exit(
     {
       if (file.exists(processing)) {

@@ -18,8 +18,8 @@ pre_processor_flowcytometer <- function(
   message("\nProcessing flowcytometer...\n")
 
   ##
-  processing <- file.path(normalizePath(output), "bemovi", paste0("PRE-PROCESSING.FLOWCYTOMETER", ".PROCESSING"))
-  error <- file.path(normalizePath(output), "bemovi", paste0("ERROR.PRE-PROCESSING.FLOWCYTOMETER", ".ERROR"))
+  processing <- file.path(normalizePath(output), "flowcytometer", paste0("PRE-PROCESSING.FLOWCYTOMETER", ".PROCESSING"))
+  error <- file.path(normalizePath(output), "flowcytometer", paste0("ERROR.PRE-PROCESSING.FLOWCYTOMETER", ".ERROR"))
   on.exit(
     {
       if (file.exists(processing)) {
