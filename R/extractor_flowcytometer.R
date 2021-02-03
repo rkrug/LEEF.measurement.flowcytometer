@@ -23,8 +23,13 @@ extractor_flowcytometer <- function(
   message("Extracting flowcytometer...\n")
 
   ##
-  processing <- file.path(normalizePath(output), "flowcytometer", paste0("EXTRACTING.FLOWCYTOMETER", ".PROCESSING"))
-  error <- file.path(normalizePath(output), "flowcytometer", paste0("ERROR.EXTRACTING.FLOWCYTOMETER", ".ERROR"))
+  suppressWarnings(
+    {
+      processing <- file.path(normalizePath(output), "flowcytometer", paste0("EXTRACTING.FLOWCYTOMETER", ".PROCESSING"))
+      error <- file.path(normalizePath(output), "flowcytometer", paste0("ERROR.EXTRACTING.FLOWCYTOMETER", ".ERROR"))
+      file.create( processing )
+    }
+  )
   on.exit(
     {
       if (file.exists(processing)) {
@@ -33,7 +38,7 @@ extractor_flowcytometer <- function(
       }
     }
   )
-  file.create( processing )
+
   ##
 
 # Based on flowcyt_1_c6_to_RData.R ----------------------------------------
@@ -57,15 +62,17 @@ extractor_flowcytometer <- function(
   )
 
   if (length(fcs_path) != 1) {
+    unlink(processing)
     message("Exactly one directory is expected in the flowcytometer folder\n")
     message("\n########################################################\n")
     return(invisible(FALSE))
   }
 
   if (length(fcs_files) == 0) {
+    unlink(processing)
     message("nothing to extract\n")
     message("\n########################################################\n")
-    return(invisible(FALSE))
+    return(invisible(TRUE))
   }
 
 
@@ -191,7 +198,7 @@ extractor_flowcytometer <- function(
 
   # standardize naming
   # flow.data <- flow.data[, c("filename","sample","date","volume","total.counts","tot_density_perml","specname")]
-  flow.data <- flow.data[, c("sample","volume","total.counts","tot_density_perml", "dilution_factor")]
+  flow.data <- flow.data[, c("sample", "bottle", "volume","total.counts","tot_density_perml", "dilution_factor")]
 
   rownames(flow.data) <- NULL
 

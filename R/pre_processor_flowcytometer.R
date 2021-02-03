@@ -16,33 +16,27 @@ pre_processor_flowcytometer <- function(
   ##
   message("\n########################################################\n")
   message("\nProcessing flowcytometer...\n")
-
-  ##
-  processing <- file.path(normalizePath(output), "flowcytometer", paste0("PRE-PROCESSING.FLOWCYTOMETER", ".PROCESSING"))
-  error <- file.path(normalizePath(output), "flowcytometer", paste0("ERROR.PRE-PROCESSING.FLOWCYTOMETER", ".ERROR"))
-  on.exit(
-    {
-      if (file.exists(processing)) {
-        unlink(processing)
-        file.create(error)
-      }
-    }
-  )
-  file.create( processing )
-  ##
-
-
-  ##
+  
+  if ( length( list.files( file.path(input, "flowcytometer") ) ) == 0 ) {
+    message("\nEmpty or missing flowcytometer directory - nothing to do.\n")
+    message("\ndone\n")
+    message("########################################################\n")
+    return(invisible(TRUE))
+  }
+  
   dir.create(
     file.path(output, "flowcytometer"),
     recursive = TRUE,
     showWarnings = FALSE
   )
+  ##
+
+
   file.copy(
-  	file.path( input, "..", "00.general.parameter", "." ),
-  	file.path( output, "flowcytometer" ),
-  	recursive = TRUE,
-  	overwrite = TRUE
+    file.path( input, "..", "00.general.parameter", "." ),
+    file.path( output, "flowcytometer" ),
+    recursive = TRUE,
+    overwrite = TRUE
   )
 
   file.copy(
@@ -53,7 +47,7 @@ pre_processor_flowcytometer <- function(
 
   ##
 
-  unlink(processing)
+
   message("done\n")
   message("\n########################################################\n")
   ##
