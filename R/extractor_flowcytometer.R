@@ -287,6 +287,8 @@ extractor_flowcytometer <- function(
 
 # ABUNDANCE DYNAMICS ------------------------------------------------------
 
+# Apply bacteria gate -----------------------------------------------------
+
    # applying filter to whole flowSet
    result <- flowCore::filter(fsa, bacteria_gate)
 
@@ -380,6 +382,8 @@ extractor_flowcytometer <- function(
   flow.data[["MNA_perml"]] <- flow.data[["MNA_counts"]] * 1000000/flow.data[["volume"]] * flow.data[["dilution_factor"]]
   flow.data[["HNA_perml"]] <- flow.data[["HNA_counts"]] * 1000000/flow.data[["volume"]] * flow.data[["dilution_factor"]]
 
+
+# Apply alagae gate -------------------------------------------------------
 
   # get the algae
   algae <- flowCore::filter(fsa, algae_gate)
