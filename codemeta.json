@@ -16,7 +16,7 @@
     "name": "R",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 4.0.3 (2020-10-10)",
+  "runtimePlatform": "R version 4.0.4 (2021-02-15)",
   "author": [
     {
       "@type": "Person",
@@ -27,7 +27,12 @@
   ],
   "contributor": {},
   "copyrightHolder": {},
-  "funder": {},
+  "funder": [
+    {
+      "@type": "Organization",
+      "name": "SNF Project 310030_188431"
+    }
+  ],
   "maintainer": [
     {
       "@type": "Person",
