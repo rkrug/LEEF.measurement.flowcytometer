@@ -20,13 +20,13 @@ extractor_flowcytometer <- function(
   output
 ) {
   message("\n########################################################\n")
-  message("Extracting flowcytometer...\n")
+  message("Extracting flowcytometer gating...\n")
 
   ##
   suppressWarnings(
     {
-      processing <- file.path(normalizePath(output), "flowcytometer", paste0("EXTRACTING.FLOWCYTOMETER", ".PROCESSING"))
-      error <- file.path(normalizePath(output), "flowcytometer", paste0("ERROR.EXTRACTING.FLOWCYTOMETER", ".ERROR"))
+      processing <- file.path(normalizePath(output), "flowcytometer", paste0("EXTRACTING.FLOWCYTOMETER.GATING", ".PROCESSING"))
+      error <- file.path(normalizePath(output), "flowcytometer", paste0("ERROR.EXTRACTING.FLOWCYTOMETER.GATING", ".ERROR"))
       file.create( processing )
     }
   )
@@ -41,146 +41,15 @@ extractor_flowcytometer <- function(
 
   ##
 
-# Based on flowcyt_1_c6_to_RData.R ----------------------------------------
+  gates_coordinates <- read.csv(file.path( input, "flowcytometer", "gates_coordinates.csv" ))
+
+  fs <- file.path( output, "flowcytometer", "flowcytometer_ungated.csv" )
+
+
+  # Based on flowcyt_1_c6_to_RData.R ----------------------------------------
   # Converting the Flowcytometer Output of bacterial abundances into a usable data frame
   # David Inauen, 19.06.2017
 
-
-# Get fcs file names ------------------------------------------------------
-
-  fcs_path <- file.path( input, "flowcytometer" )
-  fcs_path <- list.dirs(
-    fcs_path,
-    full.names = TRUE,
-    recursive = FALSE
-  )
-  fcs_files <- list.files(
-    path = fcs_path,
-    pattern = "*.fcs",
-    recursive = TRUE,
-    full.names = TRUE
-  )
-
-  if (length(fcs_path) != 1) {
-    unlink(processing)
-    message("Exactly one directory is expected in the flowcytometer folder\n")
-    message("\n########################################################\n")
-    return(invisible(FALSE))
-  }
-
-  if (length(fcs_files) == 0) {
-    unlink(processing)
-    message("nothing to extract\n")
-    message("\n########################################################\n")
-    return(invisible(TRUE))
-  }
-
-
-# Load parameter files\ ----------------------------------------------------
-
-  metadata <- read.csv(file.path( input, "flowcytometer", "metadata_flowcytometer.csv" ))
-  gates_coordinates <- read.csv(file.path( input, "flowcytometer", "gates_coordinates.csv" ))
-
-# check file sizes and delete empty wells ---------------------------------
-
-  fcs_files <- fcs_files[ file.info(fcs_files)[,"size"] > 3000 ]
-
-# read flowSet automatically ----------------------------------------------
-
-  ### begin New code
-  # read fcs
-  fsa <- flowCore::read.flowSet(
-    path = fcs_path
-  )
-
-  #extract keyword list
-  kw <- flowCore::keyword(
-    fsa,
-    keyword = list(
-      # filename = "#SAMPLE",
-      sample = "$WELLID", ## "$SMNO",
-      # date = "$DATE",
-      volume = "$VOL",
-      proj = "$PROJ" ## needed?????
-    )
-  )
-  # kw <- cbind(filename = rownames(kw), kw)
-
-
-  #assign it to pdata of fs
-  flowCore::pData(fsa) <- as.data.frame(kw)
-  # pData(fsa)
-
-  ### end new
-
-# CREATE FLOW DATA FRAME AND FILL WITH UNGATED COUNT ----------------------
-
-  flow.data <- flowCore::pData( flowCore::phenoData(fsa) )
-
-  # find the number of events (equals the number of rows)
-  num <- sapply(
-    1:length(fsa),
-    function(i) {
-      num <- dim( flowCore::exprs(fsa[[i]]) )[1]
-    }
-  )
-  flow.data <- cbind(
-    flow.data,
-    "total.counts" = num
-  )
-
-  # Extract the volume of medium sampled
-  flow.data[["volume"]] <- as.numeric(
-    as.character(
-      flowCore::phenoData(fsa)[["volume"]]
-    )
-  )
-
-  # RL: new: merge with metadata
-  flow.data <- merge(flow.data, metadata, by = "sample", all.x = TRUE)
-
-
-	# calculate events recorded per ml
-  #RL: new: use dilution_factor from metadata
-  flow.data[["tot_density_perml"]] <- flow.data[["total.counts"]] * 1000000 / flow.data[["volume"]] * flow.data[["dilution_factor"]]
-#   flow.data[["specname"]] <- paste(
-#     flow.data[["filename"]],
-#     flow.data[["proj"]],
-#     sep = "_"
-#   )
-
-
-  # standardize naming
-  # flow.data <- flow.data[, c("filename","sample","date","volume","total.counts","tot_density_perml","specname")]
-  flow.data <- flow.data[, c("sample", "bottle", "volume","total.counts","tot_density_perml", "dilution_factor")]
-
-  rownames(flow.data) <- NULL
-
-
-  # define transformation
-  # logTrans <- logTransform( transformationId="log10-transformation", logbase = 10, r = 1, d = 1 )
-  # aTrans <- truncateTransform( "truncate at 1", a = 1 )
-
-  # exclude values < 1 (RL: use FL1-A and FL3-A instead of -H; added line for FL4-A)
-  fsa <- flowCore::transform(
-    fsa,
-    `FL1-A` = flowCore::truncateTransform( "truncate at 1", a = 1 )(`FL1-A`),
-    `FL3-A` = flowCore::truncateTransform( "truncate at 1", a = 1 )(`FL3-A`),
-    `FL4-A` = flowCore::truncateTransform( "truncate at 1", a = 1 )(`FL4-A`),
-    `FSC-A` = flowCore::truncateTransform( "truncate at 1", a = 1 )(`FSC-A`),
-    `SSC-A` = flowCore::truncateTransform( "truncate at 1", a = 1 )(`SSC-A`),
-    `Width` = flowCore::truncateTransform( "truncate at 1", a = 1 )(`Width`)
-  )
-  # log transform (RL: use FL1-A and FL3-A instead of -H; added line for FL4-A)
-  fsa <- flowCore::transform(
-    fsa,
-    `FL1-A` = flowCore::logTransform( transformationId = "log10-transformation", logbase = 10, r = 1, d = 1 )(`FL1-A`),
-    `FL3-A` = flowCore::logTransform( transformationId = "log10-transformation", logbase = 10, r = 1, d = 1 )(`FL3-A`),
-    `FL4-A` = flowCore::logTransform( transformationId = "log10-transformation", logbase = 10, r = 1, d = 1 )(`FL4-A`),
-    `FSC-A` = flowCore::logTransform( transformationId = "log10-transformation", logbase = 10, r = 1, d = 1 )(`FSC-A`),
-    `SSC-A` = flowCore::logTransform( transformationId = "log10-transformation", logbase = 10, r = 1, d = 1 )(`SSC-A`),
-    `Width` = flowCore::logTransform( transformationId = "log10-transformation", logbase = 10, r = 1, d = 1 )(`Width`)
-  )
 
   # Apply the gating --------------------------------------------------------
 
@@ -212,33 +81,7 @@ extractor_flowcytometer <- function(
   # algae gate
   polyGate_algae <- as.matrix(gates_coordinates[1:4, 6:7])
   colnames(polyGate_algae) <- c("FL1-A","FL4-A")
-
   algae_gate <- flowCore::polygonGate(filterId="Algae", .gate= polyGate_algae)
-
-
-  # #----- HAVING A LOOK AT THE GATING -----#
-  #
-  #
-  # i=9
-  # flowViz::xyplot(`FL3-H` ~ `FL1-H`, data = fsa[[i]], filter = rectGate)
-  # fsa[[i]]
-  #
-  # i=199
-  # flowViz::xyplot(`FL3-H` ~ `FL1-H`, data = fsa[[i]], filter = rectGate)
-  # fsa[[i]]
-  #
-  # i=192
-  # flowViz::xyplot(`FL3-H` ~ `FL1-H`, data = fsa[[i]], filter = rectGate)
-  # fsa[[i]]
-  #
-  # i=200
-  # flowViz::xyplot(`FL3-H` ~ `FL1-H`, data = fsa[[i]], filter = rectGate)
-  # fsa[[i]]
-  #
-  # i=203
-  # flowViz::xyplot(`FL3-H` ~ `FL1-H`, data = fsa[[i]], filter = rectGate)
-  # fsa[[i]]
-
 
 # ABUNDANCE DYNAMICS ------------------------------------------------------
 
