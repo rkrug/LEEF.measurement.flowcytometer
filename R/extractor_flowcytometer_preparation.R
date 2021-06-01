@@ -1,7 +1,8 @@
 #' Extractor flowcytometer preparation data
 #'
 #'
-#' This function is extracting data to be added to the database (and therefore make accessible for further analysis and forecasting)
+#' This function is extracting data to be added to the database
+#' (and therefore make accessible for further analysis and forecasting)
 #' from \code{.fcs} files.
 #'
 #' @param input directory from which to read the data
@@ -9,33 +10,41 @@
 #'
 #' @return invisibly \code{TRUE} when completed successful
 #'
-#' @importFrom flowCore read.flowSet pData phenoData exprs logTransform truncateTransform transform rectangleGate Subset
+#' @importFrom flowCore read.flowSet pData phenoData exprs logTransform truncateTransform transform rectangleGate Subset transformList
 #' @importFrom  yaml read_yaml
 #' @importFrom  stats setNames
-#' @importFrom utils write.csv
+#' @importFrom utils read.csv write.csv
 #' @export
 #'
-extractor_flowcytometer <- function(
+extractor_flowcytometer_preparation <- function(
   input,
   output
 ) {
-  message("\n########################################################\n")
-  message("Extracting flowcytometer preparation ...\n")
+  add_path <- file.path(output, "flowcytometer")
+  dir.create(add_path, recursive = TRUE, showWarnings = FALSE)
+  loggit::set_logfile(file.path(add_path, "flowcytometer.log"))
+
+  message("########################################################")
+  message("   preparing flowcytometer...")
 
   ##
-  suppressWarnings(
-    {
-      processing <- file.path(normalizePath(output), "flowcytometer", paste0("EXTRACTING.FLOWCYTOMETER.PREPARATION", ".PROCESSING"))
-      error <- file.path(normalizePath(output), "flowcytometer", paste0("ERROR.EXTRACTING.FLOWCYTOMETER.PREPARATION", ".ERROR"))
-      file.create( processing )
-    }
+  suppressWarnings({
+    processing <- file.path(
+      normalizePath(output), "flowcytometer",
+      paste0("EXTRACTING.FLOWCYTOMETER.PREPARATION", ".PROCESSING")
+    )
+    error <- file.path(
+      normalizePath(output), "flowcytometer",
+      paste0("ERROR.EXTRACTING.FLOWCYTOMETER.PREPARATION", ".ERROR")
+    )
+    file.create(processing)
+  }
   )
-  on.exit(
-    {
-      if (file.exists(processing)) {
-        unlink(processing)
-        file.create(error)
-      }
+  on.exit({
+            if (file.exists(processing)) {
+            unlink(processing)
+            file.create(error)
+          }
     }
   )
 
@@ -48,12 +57,13 @@ extractor_flowcytometer <- function(
 
   # Get fcs file names ------------------------------------------------------
 
-  fcs_path <- file.path( input, "flowcytometer" )
+  fcs_path <- file.path(input, "flowcytometer")
   fcs_path <- list.dirs(
     fcs_path,
     full.names = TRUE,
     recursive = FALSE
   )
+
   fcs_files <- list.files(
     path = fcs_path,
     pattern = "*.fcs",
@@ -63,141 +73,108 @@ extractor_flowcytometer <- function(
 
   if (length(fcs_path) != 1) {
     unlink(processing)
-    message("Exactly one directory is expected in the flowcytometer folder\n")
-    message("\n########################################################\n")
+    message("   Exactly one directory is expected in the flowcytometer folder")
+    message("########################################################")
     return(invisible(FALSE))
   }
 
   if (length(fcs_files) == 0) {
     unlink(processing)
-    message("nothing to extract\n")
-    message("\n########################################################\n")
+    message("   nothing to extract")
+    message("########################################################")
     return(invisible(TRUE))
   }
 
 
-  # Load parameter files\ ----------------------------------------------------
+  # Load parameter files ----------------------------------------------------
 
-  metadata <- read.csv(file.path( input, "flowcytometer", "metadata_flowcytometer.csv" ))
+  metadata <- utils::read.csv(file.path(input, "flowcytometer", "metadata_flowcytometer.csv"))
+
+#############################################################
+# <<<< BEGIN SCRIPT   #######################################
+#############################################################
 
   # check file sizes and delete empty wells ---------------------------------
 
-  fcs_files <- fcs_files[ file.info(fcs_files)[,"size"] > 3000 ]
+  fcs_files <- fcs_files[file.info(fcs_files)[, "size"] > 3000]
 
   # read flowSet automatically ----------------------------------------------
 
-  # Due to changes in flowCore (simplifications) the code should be changed.
-  # See https://support.bioconductor.org/p/p132747/#p132763 for details
-
-  # Old Code
-  # fsa <- flowCore::read.flowSet(
-  #   path = fcs_path,
-  #   transformation = FALSE,
-  #   phenoData = list(
-  #     filename = "#SAMPLE",
-  #     sample = "$SMNO",
-  #     date = "$DATE",
-  #     volume = "$VOL",
-  #     proj = "$PROJ"
-  #   )
-  # )
-
-  ### begin New code from link above
   # read fcs
   fsa <- flowCore::read.flowSet(
     path = fcs_path
   )
 
-  #extract keyword list
-  kw <- flowCore::keyword(
-    fsa,
-    keyword = list(
-      # filename = "#SAMPLE",
-      sample = "$WELLID", ## "$SMNO",
-      # date = "$DATE",
-      volume = "$VOL",
-      proj = "$PROJ" ## needed?????
-    )
+
+#  BEGIN from script --------------------------------------------------------------------
+
+# extract keyword list
+# Uriah: I put date back in because it is needed in the script below...
+# or can I remove it in the script below?
+kw <- flowCore::keyword(
+  fsa,
+  keyword = list(
+    sample = "$WELLID",
+    date = "$DATE",
+    volume = "$VOL",
+    proj = "$PROJ"
   )
+) ## PROJ needed?????
+kw <- cbind(filename = rownames(kw), kw)
 
-  #assign it to pdata of fs
-  flowCore::pData(fsa) <- as.data.frame(kw)
+#assign it to pdata of fs
+flowCore::pData(fsa) <- as.data.frame(kw)
 
+# CREATE FLOW DATA FRAME AND FILL WITH UNGATED COUNT ----------------------
+flow.data <- flowCore::pData(flowCore::phenoData(fsa))
 
-  # CREATE FLOW DATA FRAME AND FILL WITH UNGATED COUNT ----------------------
+# find the number of events (equals the number of rows)
+num <- sapply(
+  seq_along(fsa),
+  function(i) {
+   dim(flowCore::exprs(fsa[[i]]))[1]
+  }
+)
+flow.data <- cbind(flow.data, "total.counts" = num)
 
-  flow.data <- flowCore::pData( flowCore::phenoData(fsa) )
+# Extract the volume sampled
+flow.data$volume <- as.numeric(as.character(flowCore::phenoData(fsa)$volume))
 
-  # find the number of events (equals the number of rows)
-  num <- sapply(
-    1:length(fsa),
-    function(i) {
-      num <- dim( flowCore::exprs(fsa[[i]]) )[1]
-    }
+# RL: new: merge with metadata
+flow.data <- merge(flow.data, metadata)
+
+# calculate events recorded per ml
+#RL: new: use dilution_factor from metadata
+flow.data$tot_density_perml <- flow.data$total.counts * 1000000 / flow.data$volume * flow.data$dilution_factor
+flow.data$specname <- paste(flow.data$filename, flow.data$proj, sep = "_")
+
+flow.data <- flow.data[, c("filename", "bottle", "date", "sample", "volume", "total.counts",
+                          "tot_density_perml", "specname", "dilution_factor")]
+rownames(flow.data) <- NULL
+
+# exclude values < 1 (RL: use FL1-A and FL3-A instead of -H; added line for FL4-A)
+fsa <- flowCore::transform(
+  fsa,
+  flowCore::transformList(
+    c("FL1-A", "FL3-A", "FL4-A", "FSC-A", "SSC-A", "Width"),
+    truncateTransform("truncate at 1")
   )
-  flow.data <- cbind(
-    flow.data,
-    "total.counts" = num
-  )
+)
 
-  # Extract the volume of medium sampled
-  flow.data[["volume"]] <- as.numeric(
-    as.character(
-      flowCore::phenoData(fsa)[["volume"]]
-    )
-  )
+# log transform (RL: use FL1-A and FL3-A instead of -H; added line for FL4-A)
+fsa <- flowCore::transform(
+  fsa,
+  flowCore::transformList(c("FL1-A", "FL3-A", "FL4-A", "FSC-A", "SSC-A", "Width"), "log10")
+)
 
-  # RL: new: merge with metadata
-  flow.data <- merge(flow.data, metadata, by = "sample", all.x = TRUE)
-
-
-  # calculate events recorded per ml
-  #RL: new: use dilution_factor from metadata
-  flow.data[["tot_density_perml"]] <- flow.data[["total.counts"]] * 1000000 / flow.data[["volume"]] * flow.data[["dilution_factor"]]
-  #   flow.data[["specname"]] <- paste(
-  #     flow.data[["filename"]],
-  #     flow.data[["proj"]],
-  #     sep = "_"
-  #   )
-
-
-  # standardize naming
-  # flow.data <- flow.data[, c("filename","sample","date","volume","total.counts","tot_density_perml","specname")]
-  flow.data <- flow.data[, c("sample", "bottle", "volume","total.counts","tot_density_perml", "dilution_factor")]
-
-  rownames(flow.data) <- NULL
-
-
-  # define transformation
-  # logTrans <- logTransform( transformationId="log10-transformation", logbase = 10, r = 1, d = 1 )
-  # aTrans <- truncateTransform( "truncate at 1", a = 1 )
-
-  # exclude values < 1 (RL: use FL1-A and FL3-A instead of -H; added line for FL4-A)
-  fsa <- flowCore::transform(
-    fsa,
-    `FL1-A` = flowCore::truncateTransform( "truncate at 1", a = 1 )(`FL1-A`),
-    `FL3-A` = flowCore::truncateTransform( "truncate at 1", a = 1 )(`FL3-A`),
-    `FL4-A` = flowCore::truncateTransform( "truncate at 1", a = 1 )(`FL4-A`),
-    `FSC-A` = flowCore::truncateTransform( "truncate at 1", a = 1 )(`FSC-A`),
-    `SSC-A` = flowCore::truncateTransform( "truncate at 1", a = 1 )(`SSC-A`),
-    `Width` = flowCore::truncateTransform( "truncate at 1", a = 1 )(`Width`)
-  )
-  # log transform (RL: use FL1-A and FL3-A instead of -H; added line for FL4-A)
-  fsa <- flowCore::transform(
-    fsa,
-    `FL1-A` = flowCore::logTransform( transformationId = "log10-transformation", logbase = 10, r = 1, d = 1 )(`FL1-A`),
-    `FL3-A` = flowCore::logTransform( transformationId = "log10-transformation", logbase = 10, r = 1, d = 1 )(`FL3-A`),
-    `FL4-A` = flowCore::logTransform( transformationId = "log10-transformation", logbase = 10, r = 1, d = 1 )(`FL4-A`),
-    `FSC-A` = flowCore::logTransform( transformationId = "log10-transformation", logbase = 10, r = 1, d = 1 )(`FSC-A`),
-    `SSC-A` = flowCore::logTransform( transformationId = "log10-transformation", logbase = 10, r = 1, d = 1 )(`SSC-A`),
-    `Width` = flowCore::logTransform( transformationId = "log10-transformation", logbase = 10, r = 1, d = 1 )(`Width`)
-  )
-
+#############################################################
+# >>>> END SCRIPT   #########################################
+#############################################################
 
   # SAVE --------------------------------------------------------------------
 
-  add_path <- file.path( output, "flowcytometer" )
-  dir.create( add_path, recursive = TRUE, showWarnings = FALSE )
+  add_path <- file.path(output, "flowcytometer")
+  dir.create(add_path, recursive = TRUE, showWarnings = FALSE)
 
   timestamp <- yaml::read_yaml(file.path(input,  "flowcytometer", "sample_metadata.yml"))$timestamp
 
@@ -211,6 +188,11 @@ extractor_flowcytometer <- function(
     file = file.path(add_path, "flowcytometer_ungated.csv"),
     row.names = FALSE
   )
+  saveRDS(
+    fsa,
+    file = file.path(add_path, "flowcytometer_fsa_ungated.rds")
+  )
+
   to_copy <- grep(
     list.files(
       file.path(input, "flowcytometer"),
@@ -228,8 +210,8 @@ extractor_flowcytometer <- function(
   # Finalize ----------------------------------------------------------------
 
   unlink(processing)
-  message("done\n")
-  message("\n########################################################\n")
+  message("   done")
+  message("########################################################")
 
   invisible(TRUE)
 }

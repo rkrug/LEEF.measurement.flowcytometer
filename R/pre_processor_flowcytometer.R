@@ -13,17 +13,21 @@ pre_processor_flowcytometer <- function(
   input,
   output
 ) {
+  add_path <- file.path(output, "flowcytometer")
+  dir.create(add_path, recursive = TRUE, showWarnings = FALSE)
+  loggit::set_logfile(file.path(add_path, "flowcytometer.log"))
+
   ##
-  message("\n########################################################\n")
-  message("\nProcessing flowcytometer...\n")
-  
+  message("########################################################")
+  message("Processing flowcytometer...")
+
   if ( length( list.files( file.path(input, "flowcytometer") ) ) == 0 ) {
-    message("\nEmpty or missing flowcytometer directory - nothing to do.\n")
-    message("\ndone\n")
-    message("########################################################\n")
+    message("Empty or missing flowcytometer directory - nothing to do.")
+    message("done")
+    message("########################################################")
     return(invisible(TRUE))
   }
-  
+
   dir.create(
     file.path(output, "flowcytometer"),
     recursive = TRUE,
@@ -48,8 +52,8 @@ pre_processor_flowcytometer <- function(
   ##
 
 
-  message("done\n")
-  message("\n########################################################\n")
+  message("done")
+  message("########################################################")
   ##
   invisible(TRUE)
 }

@@ -20,7 +20,7 @@ par_template <- function(value) {
   parName <- gsub("par_", "", parName)
   if ( missing(value) ) {
     if (!exists(parName, envir = .FLOWCYTOMETER_CACHE, inherits = FALSE)) {
-      stop("Parameter '", parName, "' not set!\n", "Set by using '", parName, "(value)' before usage!")
+      stop("Parameter '", parName, "' not set!", "Set by using '", parName, "(value)' before usage!")
     }
   } else {
     assign(parName, value, envir = .FLOWCYTOMETER_CACHE)

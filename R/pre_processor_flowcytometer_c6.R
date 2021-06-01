@@ -17,10 +17,13 @@ pre_processor_flowcytometer_c6 <- function(
   input,
   output
 ) {
+  add_path <- file.path(output, "flowcytometer")
+  dir.create(add_path, recursive = TRUE, showWarnings = FALSE)
+  loggit::set_logfile(file.path(add_path, "flowcytometer.log"))
 
   ##
-  message("\n########################################################\n")
-  message("\nProcessing flowcytometer...\n")
+  message("########################################################")
+  message("Processing flowcytometer...")
   ##
   oldwd <- getwd()
   on.exit(
@@ -83,8 +86,8 @@ pre_processor_flowcytometer_c6 <- function(
     recursive = TRUE
   )
 
-  message("done\n")
-  message("\n########################################################\n")
+  message("done")
+  message("########################################################")
 
   invisible(TRUE)
 }
