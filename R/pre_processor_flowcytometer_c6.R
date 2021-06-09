@@ -9,7 +9,6 @@
 #'
 #' @importFrom R.utils bzip2
 #' @importFrom tiff readTIFF writeTIFF
-#' @importFrom parallel mclapply detectCores
 #'
 #' @export
 #'

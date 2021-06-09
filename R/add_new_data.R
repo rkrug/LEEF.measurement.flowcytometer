@@ -87,7 +87,8 @@ add_new_data <- function(input, output) {
         unlink(processing)
       }
       return(result)
-    }
+    },
+    mc.cores = getOption("mc.cores")
   )
   names(ok) <- files
   return(ok)
