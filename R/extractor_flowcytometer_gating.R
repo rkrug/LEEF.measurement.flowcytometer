@@ -17,6 +17,7 @@
 #' @importFrom utils read.csv write.csv
 #' @importFrom plyr join
 #' @importFrom tidyr pivot_longer
+#' @importFrom magrittr %>%
 #' @import loggit
 #' @export
 #'
