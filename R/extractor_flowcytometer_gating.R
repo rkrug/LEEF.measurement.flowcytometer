@@ -224,7 +224,7 @@ names(flow.data)[which(names(flow.data) == "name")] <- "species"
 
   utils::write.csv(
     flow.data,
-    file = file.path(add_path, "density.csv"),
+    file = file.path(add_path, "flowcytometer_density.csv"),
     row.names = FALSE
   )
   to_copy <- grep(
