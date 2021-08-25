@@ -216,11 +216,15 @@ flow.data <- plyr::join(flow.data1, flow.data2)
 # >>>> END SCRIPT   #########################################
 #############################################################
 
+# Rename 'name' column to 'species' for consistency -----------------------
+
+names(flow.data)[which(names(flow.data) == "name")] <- "species"
+
 # SAVE --------------------------------------------------------------------
 
   utils::write.csv(
     flow.data,
-    file = file.path(add_path, "flowcytometer.csv"),
+    file = file.path(add_path, "density.csv"),
     row.names = FALSE
   )
   to_copy <- grep(
