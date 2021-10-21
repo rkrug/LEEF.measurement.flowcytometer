@@ -10,7 +10,7 @@
   "codeRepository": "https://github.com/LEEF-UZH/LEEF.measurement.flowcytometer",
   "issueTracker": "https://github.com/LEEF-UZH/LEEF.measurement.flowcytometer/issues",
   "license": "https://spdx.org/licenses/MIT",
-  "version": "0.8.10",
+  "version": "0.8.11",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -173,5 +173,5 @@
     }
   ],
   "readme": "https://github.com/LEEF-UZH/LEEF.measurement.flowcytometer/blob/master/Readme.md",
-  "fileSize": "70.937KB"
+  "fileSize": "71.211KB"
 }

@@ -15,6 +15,13 @@ extractor_flowcytometer <- function(
   input,
   output
 ) {
+  if ( length( list.files( file.path(input, "flowcytometer") ) ) == 0 ) {
+    message("Empty or missing flowcytometer directory - nothing to do.")
+    message("done")
+    message("########################################################")
+    return(invisible(TRUE))
+  }
+
   add_path <- file.path(output, "flowcytometer")
   dir.create(add_path, recursive = TRUE, showWarnings = FALSE)
   loggit::set_logfile(file.path(add_path, "flowcytometer.log"))
