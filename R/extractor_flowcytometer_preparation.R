@@ -94,15 +94,15 @@ extractor_flowcytometer_preparation <- function(
 # <<<< BEGIN SCRIPT   #######################################
 #############################################################
 
-  # check file sizes and delete empty wells ---------------------------------
+  # check file sizes and exclude empty wells ---------------------------------
 
-  fcs_files <- fcs_files[file.info(fcs_files)[, "size"] > 3000]
+  fcs_files <- fcs_files[file.size(fcs_files) > 4300]
 
   # read flowSet automatically ----------------------------------------------
 
   # read fcs
   fsa <- flowCore::read.flowSet(
-    path = fcs_path
+    files = fcs_files
   )
 
 
