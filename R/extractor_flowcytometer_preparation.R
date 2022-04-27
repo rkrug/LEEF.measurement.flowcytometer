@@ -17,8 +17,8 @@
 #' @export
 #'
 extractor_flowcytometer_preparation <- function(
-  input,
-  output
+    input,
+    output
 ) {
   add_path <- file.path(output, "flowcytometer")
   dir.create(add_path, recursive = TRUE, showWarnings = FALSE)
@@ -41,11 +41,11 @@ extractor_flowcytometer_preparation <- function(
   }
   )
   on.exit({
-            if (file.exists(processing)) {
-            unlink(processing)
-            file.create(error)
-          }
+    if (file.exists(processing)) {
+      unlink(processing)
+      file.create(error)
     }
+  }
   )
 
   ##
@@ -90,9 +90,9 @@ extractor_flowcytometer_preparation <- function(
 
   metadata <- utils::read.csv(file.path(input, "flowcytometer", "metadata_flowcytometer.csv"))
 
-#############################################################
-# <<<< BEGIN SCRIPT   #######################################
-#############################################################
+  #############################################################
+  # <<<< BEGIN SCRIPT   #######################################
+  #############################################################
 
   # check file sizes and exclude empty wells ---------------------------------
 
@@ -106,70 +106,81 @@ extractor_flowcytometer_preparation <- function(
   )
 
 
-#  BEGIN from script --------------------------------------------------------------------
+  #  BEGIN from script --------------------------------------------------------------------
 
-# extract keyword list
-# Uriah: I put date back in because it is needed in the script below...
-# or can I remove it in the script below?
-kw <- flowCore::keyword(
-  fsa,
-  keyword = list(
-    sample = "$WELLID",
-    date = "$DATE",
-    volume = "$VOL",
-    proj = "$PROJ"
-  )
-) ## PROJ needed?????
-kw <- cbind(filename = rownames(kw), kw)
+  # extract keyword list
+  # Uriah: I put date back in because it is needed in the script below...
+  # or can I remove it in the script below?
+  kw <- flowCore::keyword(
+    fsa,
+    keyword = list(
+      sample = "$WELLID",
+      date = "$DATE",
+      volume = "$VOL",
+      proj = "$PROJ"
+    )
+  ) ## PROJ needed?????
 
-#assign it to pdata of fs
-flowCore::pData(fsa) <- as.data.frame(kw)
+  ###### ADDED FOR EAWAG MEASUREMENTS BEGIN ######
 
-# CREATE FLOW DATA FRAME AND FILL WITH UNGATED COUNT ----------------------
-flow.data <- flowCore::pData(flowCore::phenoData(fsa))
-
-# find the number of events (equals the number of rows)
-num <- sapply(
-  seq_along(fsa),
-  function(i) {
-   dim(flowCore::exprs(fsa[[i]]))[1]
+  if (!("sample" %in% colnames(kw))){
+    sample <- rownames(kw)
+    sample <- gsub(".fcs$", "", sample)
+    kw <- cbind(sample = sample, kw)
   }
-)
-flow.data <- cbind(flow.data, "total.counts" = num)
 
-# Extract the volume sampled
-flow.data$volume <- as.numeric(as.character(flowCore::phenoData(fsa)$volume))
+  ###### ADDED FOR EAWAG MEASUREMENTS END ######
 
-# RL: new: merge with metadata
-flow.data <- merge(flow.data, metadata)
+  kw <- cbind(filename = rownames(kw), kw)
 
-# calculate events recorded per ml
-#RL: new: use dilution_factor from metadata
-flow.data$tot_density_perml <- flow.data$total.counts * 1000000 / flow.data$volume * flow.data$dilution_factor
-flow.data$specname <- paste(flow.data$filename, flow.data$proj, sep = "_")
+  #assign it to pdata of fs
+  flowCore::pData(fsa) <- as.data.frame(kw)
 
-flow.data <- flow.data[, c("filename", "bottle", "date", "sample", "volume", "total.counts",
-                          "tot_density_perml", "specname", "dilution_factor")]
-rownames(flow.data) <- NULL
+  # CREATE FLOW DATA FRAME AND FILL WITH UNGATED COUNT ----------------------
+  flow.data <- flowCore::pData(flowCore::phenoData(fsa))
 
-# exclude values < 1 (RL: use FL1-A and FL3-A instead of -H; added line for FL4-A)
-fsa <- flowCore::transform(
-  fsa,
-  flowCore::transformList(
-    c("FL1-A", "FL3-A", "FL4-A", "FSC-A", "SSC-A", "Width"),
-    truncateTransform("truncate at 1")
+  # find the number of events (equals the number of rows)
+  num <- sapply(
+    seq_along(fsa),
+    function(i) {
+      dim(flowCore::exprs(fsa[[i]]))[1]
+    }
   )
-)
+  flow.data <- cbind(flow.data, "total.counts" = num)
 
-# log transform (RL: use FL1-A and FL3-A instead of -H; added line for FL4-A)
-fsa <- flowCore::transform(
-  fsa,
-  flowCore::transformList(c("FL1-A", "FL3-A", "FL4-A", "FSC-A", "SSC-A", "Width"), "log10")
-)
+  # Extract the volume sampled
+  flow.data$volume <- as.numeric(as.character(flowCore::phenoData(fsa)$volume))
 
-#############################################################
-# >>>> END SCRIPT   #########################################
-#############################################################
+  # RL: new: merge with metadata
+  flow.data <- merge(flow.data, metadata, )
+
+  # calculate events recorded per ml
+  #RL: new: use dilution_factor from metadata
+  flow.data$tot_density_perml <- flow.data$total.counts * 1000000 / flow.data$volume * flow.data$dilution_factor
+  flow.data$specname <- paste(flow.data$filename, flow.data$proj, sep = "_")
+
+  flow.data <- flow.data[, c("filename", "bottle", "date", "sample", "volume", "total.counts",
+                             "tot_density_perml", "specname", "dilution_factor")]
+  rownames(flow.data) <- NULL
+
+  # exclude values < 1 (RL: use FL1-A and FL3-A instead of -H; added line for FL4-A)
+  fsa <- flowCore::transform(
+    fsa,
+    flowCore::transformList(
+      c("FL1-A", "FL3-A", "FL4-A", "FSC-A", "SSC-A", "Width"),
+      truncateTransform("truncate at 1")
+    )
+  )
+
+  # log transform (RL: use FL1-A and FL3-A instead of -H; added line for FL4-A)
+  fsa <- flowCore::transform(
+    fsa,
+    flowCore::transformList(c("FL1-A", "FL3-A", "FL4-A", "FSC-A", "SSC-A", "Width"), "log10")
+  )
+
+  #############################################################
+  # >>>> END SCRIPT   #########################################
+  #############################################################
 
   # SAVE --------------------------------------------------------------------
 
