@@ -83,6 +83,8 @@ extractor_flowcytometer_gating <- function(
 
     #RL: defining gates
 
+    gates <- list()
+
     # bacteria gate
     polyGate_bacteria <- as.matrix(gates_coordinates[1:4, 1:2])
     colnames(polyGate_bacteria) <- c("FL1-A", "FL3-A")
@@ -105,11 +107,21 @@ extractor_flowcytometer_gating <- function(
     rg_MNA <- flowCore::rectangleGate("FL1-A" = MNA_coordinates, filterId = "MNA")
     rg_HNA <- flowCore::rectangleGate("FL1-A" = HNA_coordinates, filterId = "HNA")
 
+    gates$bacteria <- list(
+      bacteria_gate = bacteria_gate,
+      rg_LNA = rg_LNA,
+      rg_MNA = rg_MNA,
+      rg_HNA = rg_HNA
+    )
 
     # algae gate
     polyGate_algae <- as.matrix(gates_coordinates[1:4, 6:7])
     colnames(polyGate_algae) <- c("FL1-A", "FL4-A")
     algae_gate <- flowCore::polygonGate(filterId = "Algae", .gate = polyGate_algae)
+
+    gates$algae <- list(
+      algae_gate = algae_gate
+    )
 
     # #----- HAVING A LOOK AT THE GATING -----#
 
@@ -230,9 +242,14 @@ extractor_flowcytometer_gating <- function(
 
     # SAVE --------------------------------------------------------------------
 
-   saveRDS(
+    saveRDS(
       flow.data,
       file = file.path(add_path, paste0("flowcytometer_density.", plate, ".rds"))
+    )
+
+    saveRDS(
+      gates,
+      file = file.path(add_path, paste0("flowcytometer_gates.", plate, ".rds"))
     )
 
   }
