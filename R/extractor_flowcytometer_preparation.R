@@ -51,10 +51,10 @@ extractor_flowcytometer_preparation <- function(
   ##
 
 
-  # Function to extract individual fcs folder -------------------------------
+  # Function to extract individual fcs folder per plate / folder -------------------------------
 
 
-  extract_folder <- function(
+  extract_plate <- function(
     plate,
     input,
     output
@@ -216,15 +216,13 @@ extractor_flowcytometer_preparation <- function(
 
   lapply(
     plates,
-    extract_folder,
+    extract_plate,
     input = input,
     output = output
   )
 
- ## TODO: combine individual results for density
 
 # Do final copying of `.ciplus` files -------------------------------------
-
 
 
   to_copy <- grep(

@@ -7,13 +7,13 @@
   "codeRepository": "https://github.com/LEEF-UZH/LEEF.measurement.flowcytometer",
   "issueTracker": "https://github.com/LEEF-UZH/LEEF.measurement.flowcytometer/issues",
   "license": "https://spdx.org/licenses/MIT",
-  "version": "0.8.13",
+  "version": "0.8.14",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 4.2.0 (2022-04-22)",
+  "runtimePlatform": "R version 4.2.1 (2022-06-23)",
   "author": [
     {
       "@type": "Person",
@@ -168,6 +168,6 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "71.546KB",
+  "fileSize": "73.717KB",
   "readme": "https://github.com/LEEF-UZH/LEEF.measurement.flowcytometer/blob/master/Readme.md"
 }
