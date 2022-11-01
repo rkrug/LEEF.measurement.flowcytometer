@@ -54,6 +54,7 @@ extractor_flowcytometer <- function(
 
   extractor_flowcytometer_preparation(input, output)
   extractor_flowcytometer_gating(input, output)
+  ## Traits
 
 # Finalize ----------------------------------------------------------------
 

@@ -50,159 +50,180 @@ extractor_flowcytometer_preparation <- function(
 
   ##
 
-  # Based on flowcyt_1_c6_to_RData.R ----------------------------------------
-  # Converting the Flowcytometer Output of bacterial abundances into a usable data frame
-  # David Inauen, 19.06.2017
+
+  # Function to extract individual fcs folder per plate / folder -------------------------------
 
 
-  # Get fcs file names ------------------------------------------------------
+  extract_plate <- function(
+    plate,
+    input,
+    output
+  ){
+    # Based on flowcyt_1_c6_to_RData.R ----------------------------------------
+    # Converting the Flowcytometer Output of bacterial abundances into a usable data frame
+    # David Inauen, 19.06.2017
+    #
+    # Get fcs file names ------------------------------------------------------
+    fcs_path <- file.path(input, "flowcytometer", plate)
 
-  fcs_path <- file.path(input, "flowcytometer")
-  fcs_path <- list.dirs(
-    fcs_path,
-    full.names = TRUE,
-    recursive = FALSE
-  )
-
-  fcs_files <- list.files(
-    path = fcs_path,
-    pattern = "*.fcs",
-    recursive = TRUE,
-    full.names = TRUE
-  )
-
-  if (length(fcs_path) != 1) {
-    unlink(processing)
-    message("   Exactly one directory is expected in the flowcytometer folder")
-    message("########################################################")
-    return(invisible(FALSE))
-  }
-
-  if (length(fcs_files) == 0) {
-    unlink(processing)
-    message("   nothing to extract")
-    message("########################################################")
-    return(invisible(TRUE))
-  }
-
-
-  # Load parameter files ----------------------------------------------------
-
-  metadata <- utils::read.csv(file.path(input, "flowcytometer", "metadata_flowcytometer.csv"))
-
-  #############################################################
-  # <<<< BEGIN SCRIPT   #######################################
-  #############################################################
-
-  # check file sizes and exclude empty wells ---------------------------------
-
-  fcs_files <- fcs_files[file.size(fcs_files) > 4300]
-
-  # read flowSet automatically ----------------------------------------------
-
-  # read fcs
-  fsa <- flowCore::read.flowSet(
-    files = fcs_files
-  )
-
-
-  #  BEGIN from script --------------------------------------------------------------------
-
-  # extract keyword list
-  # Uriah: I put date back in because it is needed in the script below...
-  # or can I remove it in the script below?
-  kw <- flowCore::keyword(
-    fsa,
-    keyword = list(
-      sample = "$WELLID",
-      date = "$DATE",
-      volume = "$VOL",
-      proj = "$PROJ"
+    fcs_files <- list.files(
+      path = fcs_path,
+      pattern = "*.fcs",
+      recursive = TRUE,
+      full.names = TRUE
     )
-  ) ## PROJ needed?????
 
-  ###### ADDED FOR EAWAG MEASUREMENTS BEGIN ######
-
-  if (!("sample" %in% colnames(kw))){
-    sample <- rownames(kw)
-    sample <- gsub(".fcs$", "", sample)
-    kw <- cbind(sample = sample, kw)
-  }
-
-  ###### ADDED FOR EAWAG MEASUREMENTS END ######
-
-  kw <- cbind(filename = rownames(kw), kw)
-
-  #assign it to pdata of fs
-  flowCore::pData(fsa) <- as.data.frame(kw)
-
-  # CREATE FLOW DATA FRAME AND FILL WITH UNGATED COUNT ----------------------
-  flow.data <- flowCore::pData(flowCore::phenoData(fsa))
-
-  # find the number of events (equals the number of rows)
-  num <- sapply(
-    seq_along(fsa),
-    function(i) {
-      dim(flowCore::exprs(fsa[[i]]))[1]
+    if (length(fcs_files) == 0) {
+      unlink(processing)
+      message("   nothing to extract")
+      message("########################################################")
+      return(invisible(TRUE))
     }
-  )
-  flow.data <- cbind(flow.data, "total.counts" = num)
 
-  # Extract the volume sampled
-  flow.data$volume <- as.numeric(as.character(flowCore::phenoData(fsa)$volume))
 
-  # RL: new: merge with metadata
-  flow.data <- merge(flow.data, metadata, )
+    # Load parameter files ----------------------------------------------------
 
-  # calculate events recorded per ml
-  #RL: new: use dilution_factor from metadata
-  flow.data$tot_density_perml <- flow.data$total.counts * 1000000 / flow.data$volume * flow.data$dilution_factor
-  flow.data$specname <- paste(flow.data$filename, flow.data$proj, sep = "_")
+    metadata <- utils::read.csv(file.path(input, "flowcytometer", "metadata_flowcytometer.csv"))
 
-  flow.data <- flow.data[, c("filename", "bottle", "date", "sample", "volume", "total.counts",
-                             "tot_density_perml", "specname", "dilution_factor")]
-  rownames(flow.data) <- NULL
+    #############################################################
+    # <<<< BEGIN SCRIPT   #######################################
+    #############################################################
 
-  # exclude values < 1 (RL: use FL1-A and FL3-A instead of -H; added line for FL4-A)
-  fsa <- flowCore::transform(
-    fsa,
-    flowCore::transformList(
-      c("FL1-A", "FL3-A", "FL4-A", "FSC-A", "SSC-A", "Width"),
-      truncateTransform("truncate at 1")
+    # check file sizes and exclude empty wells ---------------------------------
+
+    fcs_files <- fcs_files[file.size(fcs_files) > 4300]
+
+    # read flowSet automatically ----------------------------------------------
+
+    # read fcs
+    fsa <- flowCore::read.flowSet(
+      files = fcs_files
     )
+
+
+    #  BEGIN from script --------------------------------------------------------------------
+
+    # extract keyword list
+    # Uriah: I put date back in because it is needed in the script below...
+    # or can I remove it in the script below?
+    kw <- flowCore::keyword(
+      fsa,
+      keyword = list(
+        sample = "$WELLID",
+        date = "$DATE",
+        volume = "$VOL",
+        proj = "$PROJ"
+      )
+    ) ## PROJ needed?????
+
+    ###### ADDED FOR EAWAG MEASUREMENTS BEGIN ######
+
+    if (!("sample" %in% colnames(kw))){
+      sample <- rownames(kw)
+      sample <- gsub(".fcs$", "", sample)
+      kw <- cbind(sample = sample, kw)
+    }
+
+    ###### ADDED FOR EAWAG MEASUREMENTS END ######
+
+    kw <- cbind(filename = rownames(kw), kw)
+
+    #assign it to pdata of fs
+    flowCore::pData(fsa) <- as.data.frame(kw)
+
+    # CREATE FLOW DATA FRAME AND FILL WITH UNGATED COUNT ----------------------
+    flow.data <- flowCore::pData(flowCore::phenoData(fsa))
+
+    # find the number of events (equals the number of rows)
+    num <- sapply(
+      seq_along(fsa),
+      function(i) {
+        dim(flowCore::exprs(fsa[[i]]))[1]
+      }
+    )
+    flow.data <- cbind(flow.data, "total.counts" = num)
+
+    # Extract the volume sampled
+    flow.data$volume <- as.numeric(as.character(flowCore::phenoData(fsa)$volume))
+
+    # RL: new: merge with metadata
+    flow.data <- merge(flow.data, metadata, )
+
+    # calculate events recorded per ml
+    #RL: new: use dilution_factor from metadata
+    flow.data$tot_density_perml <- flow.data$total.counts * 1000000 / flow.data$volume * flow.data$dilution_factor
+    flow.data$specname <- paste(flow.data$filename, flow.data$proj, sep = "_")
+
+    flow.data <- flow.data[, c("filename", "bottle", "date", "sample", "volume", "total.counts",
+                               "tot_density_perml", "specname", "dilution_factor")]
+    rownames(flow.data) <- NULL
+
+    # exclude values < 1 (RL: use FL1-A and FL3-A instead of -H; added line for FL4-A)
+    fsa <- flowCore::transform(
+      fsa,
+      flowCore::transformList(
+        c("FL1-A", "FL3-A", "FL4-A", "FSC-A", "SSC-A", "Width"),
+        truncateTransform("truncate at 1")
+      )
+    )
+
+    # log transform (RL: use FL1-A and FL3-A instead of -H; added line for FL4-A)
+    fsa <- flowCore::transform(
+      fsa,
+      flowCore::transformList(c("FL1-A", "FL3-A", "FL4-A", "FSC-A", "SSC-A", "Width"), "log10")
+    )
+
+    #############################################################
+    # >>>> END SCRIPT   #########################################
+    #############################################################
+
+    # SAVE --------------------------------------------------------------------
+
+    add_path <- file.path(output, "flowcytometer")
+    dir.create(add_path, recursive = TRUE, showWarnings = FALSE)
+
+    timestamp <- yaml::read_yaml(file.path(input,  "flowcytometer", "sample_metadata.yml"))$timestamp
+
+    flow.data <- cbind(
+      timestamp = timestamp,
+      plate = plate,
+      flow.data
+    )
+
+    saveRDS(
+      flow.data,
+      file = file.path(output, "flowcytometer", paste0("flowcytometer_ungated.", plate, ".rds"))
+    )
+
+    saveRDS(
+      fsa,
+      file = file.path(output, "flowcytometer", paste0("flowcytometer_fsa_ungated.", plate, ".rds"))
+    )
+  }
+
+
+# Identify all fcs folder and iterate through them ------------------------
+
+
+  plates <- grep(
+    "p_",
+    list.dirs(
+      file.path(input, "flowcytometer"),
+      full.names = FALSE
+    ),
+    value = TRUE
   )
 
-  # log transform (RL: use FL1-A and FL3-A instead of -H; added line for FL4-A)
-  fsa <- flowCore::transform(
-    fsa,
-    flowCore::transformList(c("FL1-A", "FL3-A", "FL4-A", "FSC-A", "SSC-A", "Width"), "log10")
+  lapply(
+    plates,
+    extract_plate,
+    input = input,
+    output = output
   )
 
-  #############################################################
-  # >>>> END SCRIPT   #########################################
-  #############################################################
 
-  # SAVE --------------------------------------------------------------------
+# Do final copying of `.ciplus` files -------------------------------------
 
-  add_path <- file.path(output, "flowcytometer")
-  dir.create(add_path, recursive = TRUE, showWarnings = FALSE)
-
-  timestamp <- yaml::read_yaml(file.path(input,  "flowcytometer", "sample_metadata.yml"))$timestamp
-
-  flow.data <- cbind(
-    timestamp = timestamp,
-    flow.data
-  )
-
-  utils::write.csv(
-    flow.data,
-    file = file.path(add_path, "flowcytometer_ungated.csv"),
-    row.names = FALSE
-  )
-  saveRDS(
-    fsa,
-    file = file.path(add_path, "flowcytometer_fsa_ungated.rds")
-  )
 
   to_copy <- grep(
     list.files(
