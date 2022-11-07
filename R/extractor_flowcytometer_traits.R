@@ -87,9 +87,9 @@ extractor_flowcytometer_traits<- function(
 
     bacteria_pop <- Subset(fsa, gates$bacteria$bacteria_gate)
 
-    LNA_pop <- Subset(bacteria_pop, gates$bacteria$rg_LNA)
-    MNA_pop <- Subset(bacteria_pop, gates$bacteria$rg_MNA)
-    HNA_pop <- Subset(bacteria_pop, gates$bacteria$rg_HNA)
+    # LNA_pop <- Subset(bacteria_pop, gates$bacteria$rg_LNA)
+    # MNA_pop <- Subset(bacteria_pop, gates$bacteria$rg_MNA)
+    # HNA_pop <- Subset(bacteria_pop, gates$bacteria$rg_HNA)
 
 
     # The Algae ---------------------------------------------------------------
@@ -140,20 +140,20 @@ extractor_flowcytometer_traits<- function(
       file = file.path(output, "flowcytometer", paste0("flowcytometer_traits_bacteria.", plate, ".rds"))
     )
     message("   extracting LNA traits ", plate, " ...")
-    saveRDS(
-      extr_traits(LNA_pop),
-      file = file.path(output, "flowcytometer", paste0("flowcytometer_traits_lna.", plate, ".rds"))
-    )
-    message("   extracting MNA traits ", plate, " ...")
-    saveRDS(
-      extr_traits(MNA_pop),
-      file = file.path(output, "flowcytometer", paste0("flowcytometer_traits_mna.", plate, ".rds"))
-    )
-    message("   extracting HNA traits ", plate, " ...")
-    saveRDS(
-      extr_traits(HNA_pop),
-      file = file.path(output, "flowcytometer", paste0("flowcytometer_traits_hna.", plate, ".rds"))
-    )
+    # saveRDS(
+    #   extr_traits(LNA_pop),
+    #   file = file.path(output, "flowcytometer", paste0("flowcytometer_traits_lna.", plate, ".rds"))
+    # )
+    # message("   extracting MNA traits ", plate, " ...")
+    # saveRDS(
+    #   extr_traits(MNA_pop),
+    #   file = file.path(output, "flowcytometer", paste0("flowcytometer_traits_mna.", plate, ".rds"))
+    # )
+    # message("   extracting HNA traits ", plate, " ...")
+    # saveRDS(
+    #   extr_traits(HNA_pop),
+    #   file = file.path(output, "flowcytometer", paste0("flowcytometer_traits_hna.", plate, ".rds"))
+    # )
     message("   extracting algae traits ", plate, " ...")
     saveRDS(
       extr_traits(algae_pop),
@@ -190,7 +190,7 @@ extractor_flowcytometer_traits<- function(
     output = output
   )
 
-THIS NEEDS TO BE DONE
+
   traits <- NULL
   for (plate in plates){
     fdp <- readRDS(file.path(add_path, paste0("flowcytometer_traits_bacteria.", plate, ".rds")))

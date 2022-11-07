@@ -57,8 +57,6 @@ extractor_flowcytometer_gating <- function(
 
   gates_coordinates <- utils::read.csv(file.path(input, "flowcytometer", "gates_coordinates.csv"))
 
-
-
   # function to gate each plate ---------------------------------------------
 
   gate_plate <- function(
@@ -66,7 +64,10 @@ extractor_flowcytometer_gating <- function(
     input,
     output
   )  {
+
+
     #  read data files ----------------------------------------------------------
+
 
     flow.data <- readRDS(
       file = file.path(file.path(output, "flowcytometer"), paste0("flowcytometer_ungated.", plate, ".rds"))
@@ -136,6 +137,7 @@ extractor_flowcytometer_gating <- function(
     # ABUNDANCE DYNAMICS ------------------------------------------------------
 
     # applying filter to whole flowSet
+
     result <- flowCore::filter(fsa, bacteria_gate)
 
     # extract absolute counts
@@ -147,6 +149,7 @@ extractor_flowcytometer_gating <- function(
         i$true
       }
     )
+
 
     flow.data$bacteria_counts <- counts
     flow.data$bacteria_density_perml <- flow.data$bacteria_counts * 1000000 / flow.data$volume * flow.data$dilution_factor

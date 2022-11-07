@@ -82,8 +82,9 @@ extractor_flowcytometer_preparation <- function(
 
 
     # Load parameter files ----------------------------------------------------
-
+browser()
     metadata <- utils::read.csv(file.path(input, "flowcytometer", "metadata_flowcytometer.csv"))
+    metadata <- metadata[metadata$plate == plate,]
 
     #############################################################
     # <<<< BEGIN SCRIPT   #######################################
