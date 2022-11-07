@@ -21,7 +21,7 @@
 #' @import loggit
 #' @export
 #'
-extractor_flowcytometer_traits<- function(
+extractor_flowcytometer_traits <- function(
   input,
   output
 ) {
@@ -192,13 +192,39 @@ extractor_flowcytometer_traits<- function(
 
 
   traits <- NULL
+  #
   for (plate in plates){
-    fdp <- readRDS(file.path(add_path, paste0("flowcytometer_traits_bacteria.", plate, ".rds")))
-    traits <- rbind(flow.data, fdp)
+    traits <- rbind(
+      traits,
+      readRDS(file.path(add_path, paste0("flowcytometer_traits_bacteria.", plate, ".rds")))
+    )
   }
   saveRDS(
-    flow.data,
+    traits,
     file = file.path(add_path, paste0("flowcytometer_traits_bacteria.rds"))
+  )
+  utils::write.csv(
+    traits,
+    file = file.path(add_path, paste0("flowcytometer_traits_algae.csv")),
+    row.names = FALSE
+  )
+  #
+  traits <- NULL
+  #
+  for (plate in plates){
+    traits <- rbind(
+      traits,
+      readRDS(file.path(add_path, paste0("flowcytometer_traits_algae.", plate, ".rds")))
+    )
+  }
+  saveRDS(
+    traits,
+    file = file.path(add_path, paste0("flowcytometer_traits_algae.rds"))
+  )
+  utils::write.csv(
+    traits,
+    file = file.path(add_path, paste0("flowcytometer_traits_algae.csv")),
+    row.names = FALSE
   )
 
 
