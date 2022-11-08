@@ -203,11 +203,7 @@ extractor_flowcytometer_traits <- function(
     traits,
     file = file.path(add_path, paste0("flowcytometer_traits_bacteria.rds"))
   )
-  utils::write.csv(
-    traits,
-    file = file.path(add_path, paste0("flowcytometer_traits_algae.csv")),
-    row.names = FALSE
-  )
+  unlink(list.files(add_path, "flowcytometer_traits_bacteria\\.p_.\\.rds", full.names = TRUE))
   #
   traits <- NULL
   #
@@ -221,11 +217,7 @@ extractor_flowcytometer_traits <- function(
     traits,
     file = file.path(add_path, paste0("flowcytometer_traits_algae.rds"))
   )
-  utils::write.csv(
-    traits,
-    file = file.path(add_path, paste0("flowcytometer_traits_algae.csv")),
-    row.names = FALSE
-  )
+  unlink(list.files(add_path, "flowcytometer_traits_algae\\.p_.\\.rds", full.names = TRUE))
 
 
   # Finalize ----------------------------------------------------------------
