@@ -292,16 +292,12 @@ extractor_flowcytometer_gating <- function(
     fdp <- readRDS(file.path(add_path, paste0("flowcytometer_density.", plate, ".rds")))
     flow.data <- rbind(flow.data, fdp)
   }
-
-  saveRDS(
-    flow.data,
-    file = file.path(add_path, paste0("flowcytometer_density.rds"))
-  )
   utils::write.csv(
     flow.data,
     file = file.path(add_path, paste0("flowcytometer_density.csv")),
     row.names = FALSE
   )
+  unlink(list.files(add_path, "flowcytometer_density\\.p_.\\.rds", full.names = TRUE))
 
   to_copy <- grep(
     list.files(
