@@ -13,7 +13,7 @@
     "name": "R",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 4.2.2 (2022-10-31)",
+  "runtimePlatform": "R version 4.2.1 (2022-06-23)",
   "author": [
     {
       "@type": "Person",
@@ -168,6 +168,6 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "81.042KB",
+  "fileSize": "81.048KB",
   "readme": "https://github.com/LEEF-UZH/LEEF.measurement.flowcytometer/blob/LEEF-2/Readme.md"
 }
