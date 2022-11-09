@@ -190,6 +190,9 @@ extractor_flowcytometer_traits <- function(
     output = output
   )
 
+  message("   merging bacteria traits ...")
+
+  metadata <- utils::read.csv(file.path(input, "flowcytometer", "metadata_flowcytometer.csv"))
 
   traits <- NULL
   #
@@ -199,12 +202,21 @@ extractor_flowcytometer_traits <- function(
       readRDS(file.path(add_path, paste0("flowcytometer_traits_bacteria.", plate, ".rds")))
     )
   }
+  traits <- merge(
+    traits,
+    metadata,
+    by.x = c("sample", "plate"),
+    by.y = c("sample", "plate"),
+    all.x = TRUE,
+    all.y = FALSE
+  )
   saveRDS(
     traits,
     file = file.path(add_path, paste0("flowcytometer_traits_bacteria.rds"))
   )
   unlink(list.files(add_path, "flowcytometer_traits_bacteria\\.p_.\\.rds", full.names = TRUE))
   #
+  message("   merging algae traits ...")
   traits <- NULL
   #
   for (plate in plates){
@@ -213,6 +225,14 @@ extractor_flowcytometer_traits <- function(
       readRDS(file.path(add_path, paste0("flowcytometer_traits_algae.", plate, ".rds")))
     )
   }
+  traits <- merge(
+    traits,
+    metadata,
+    by.x = c("sample", "plate"),
+    by.y = c("sample", "plate"),
+    all.x = TRUE,
+    all.y = FALSE
+  )
   saveRDS(
     traits,
     file = file.path(add_path, paste0("flowcytometer_traits_algae.rds"))
