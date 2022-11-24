@@ -128,6 +128,7 @@ extractor_flowcytometer_traits <- function(
       )
 
       traits <- do.call(rbind, traits)
+      traits$timestamp <- yaml::read_yaml(file.path(input,  "flowcytometer", "sample_metadata.yml"))$timestamp
       return(traits)
     }
 
