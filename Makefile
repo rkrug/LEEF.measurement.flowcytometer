@@ -32,7 +32,7 @@ READMEHTML = Readme.html
 
 #############
 
-all: readme docs vignettes build
+all: docs build indtasll drat
 
 #############
 
@@ -78,7 +78,7 @@ clean_vignettes:
 
 ####
 
-build: docs
+build:
 	cd ..;\
 	R CMD build $(PKGSRC)
 
@@ -90,7 +90,7 @@ build-cran: docs
 
 ####
 
-install: build
+install:
 	cd ..;\
 	R CMD INSTALL $(PKGNAME)_$(PKGVERS).tar.gz
 
@@ -105,11 +105,11 @@ clean_check:
 
 ####
 
-drat: docs build
-	cd 
+drat:
+	cd
 	@Rscript -e "drat::insertPackage('./../$(PKGNAME)_$(PKGVERS).tar.gz', repodir = './../../drat/', commit = TRUE)"
 
-	
+
 ####
 
 # check_rhub
