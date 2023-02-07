@@ -32,7 +32,7 @@ READMEHTML = Readme.html
 
 #############
 
-all: readme docs vignettes build
+all: doc metadata build install
 
 #############
 
@@ -62,6 +62,12 @@ deps:
 
 ####
 
+doc:
+	Rscript -e "devtools::document(roclets = c('rd', 'collate', 'namespace', 'vignette'))"
+
+metadata:
+	Rscript -e "codemetar::write_codemeta()"
+
 docs:
 	Rscript -e "devtools::document(roclets = c('rd', 'collate', 'namespace', 'vignette'))"
 	Rscript -e "codemetar::write_codemeta()"
@@ -78,7 +84,7 @@ clean_vignettes:
 
 ####
 
-build: docs
+build:
 	cd ..;\
 	R CMD build $(PKGSRC)
 
@@ -90,7 +96,7 @@ build-cran: docs
 
 ####
 
-install: build
+install:
 	cd ..;\
 	R CMD INSTALL $(PKGNAME)_$(PKGVERS).tar.gz
 
@@ -105,11 +111,11 @@ clean_check:
 
 ####
 
-drat: docs build
-	cd 
+drat:
+	cd
 	@Rscript -e "drat::insertPackage('./../$(PKGNAME)_$(PKGVERS).tar.gz', repodir = './../../drat/', commit = TRUE)"
 
-	
+
 ####
 
 # check_rhub
