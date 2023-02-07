@@ -113,12 +113,12 @@ extract_traits <- function(
 
   # Do the trait extraction --------------------------------------------
 
-  traits(input, particles)
+  results <- traits(input, particles)
 
   # Finalize ----------------------------------------------------------------
 
   message("   done")
   message("########################################################")
 
-  invisible(TRUE)
+  return(results)
 }
