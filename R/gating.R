@@ -122,7 +122,10 @@ gating <- function(
   flow.data$HNA_perml <- flow.data$HNA_counts * 1000000 / flow.data$volume * flow.data$dilution_factor
 
   # get the algae
-  algae <- flowCore::filter(fsa, algae_gate)
+  #algae <- flowCore::filter(fsa, algae_gate)
+  subset.algae <- flowCore::Subset(fsa, !bacteria_gate)
+  algae <- flowCore::filter(subset.algae, algae_gate)
+
 
   # extract absolute counts
   l_algae <- lapply(
@@ -166,5 +169,5 @@ gating <- function(
 
   names(flow.data)[which(names(flow.data) == "name")] <- "species"
 
-  return(list(flow.data = flow.data, ))
+  return(list(flow.data = flow.data))
 }
