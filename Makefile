@@ -32,7 +32,7 @@ READMEHTML = Readme.html
 
 #############
 
-all: docs build indtasll drat
+all: docs metadata build install
 
 #############
 
@@ -61,6 +61,12 @@ deps:
 	Rscript -e 'if (!require("Rd2roxygen")) install.packages("Rd2roxygen", repos="http://cran.rstudio.com")'
 
 ####
+
+doc:
+	Rscript -e "devtools::document(roclets = c('rd', 'collate', 'namespace', 'vignette'))"
+
+metadata:
+	Rscript -e "codemetar::write_codemeta()"
 
 docs:
 	Rscript -e "devtools::document(roclets = c('rd', 'collate', 'namespace', 'vignette'))"
