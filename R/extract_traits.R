@@ -115,8 +115,8 @@ extract_traits <- function(
         traits <- merge(
           traits,
           metadata_flowcytometer,
-          by.x = c("sample", "plate"),
-          by.y = c("sample", "plate"),
+          by.x = c("sample"),
+          by.y = c("sample"),
           all.x = TRUE,
           all.y = FALSE
         )
