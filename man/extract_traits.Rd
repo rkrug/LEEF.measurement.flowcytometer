@@ -4,7 +4,11 @@
 \alias{extract_traits}
 \title{Extractor flowcytometer data}
 \usage{
-extract_traits(input, particles = c("bacteria", "LNA", "MNA", "HNA", "algae"))
+extract_traits(
+  input,
+  particles = c("bacteria", "LNA", "MNA", "HNA", "algae"),
+  metadata_flowcytometer
+)
 }
 \arguments{
 \item{input}{directory from which to read the data}
@@ -12,6 +16,8 @@ extract_traits(input, particles = c("bacteria", "LNA", "MNA", "HNA", "algae"))
 \item{particles}{\code{character} vector containing the groups to extract.
 Supported are \code{"bacteria"}, \code{"LNA"}, \code{"MNA"}, \code{"HNA"},
 \code{"algae"}.}
+
+\item{metadata_flowcytometer}{the content of the file \code{metadata_flowcytometer.csv} which will be linked into the traits}
 }
 \value{
 invisibly \code{TRUE} when completed successful

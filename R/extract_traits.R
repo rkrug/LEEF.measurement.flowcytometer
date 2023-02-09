@@ -9,6 +9,7 @@
 #' @param particles \code{character} vector containing the groups to extract.
 #'   Supported are \code{"bacteria"}, \code{"LNA"}, \code{"MNA"}, \code{"HNA"},
 #'   \code{"algae"}.
+#' @param metadata_flowcytometer the content of the file \code{metadata_flowcytometer.csv} which will be linked into the traits
 #'
 #' @return invisibly \code{TRUE} when completed successful
 #'
@@ -24,7 +25,8 @@
 #'
 extract_traits <- function(
     input,
-    particles = c("bacteria", "LNA", "MNA", "HNA", "algae")
+    particles = c("bacteria", "LNA", "MNA", "HNA", "algae"),
+    metadata_flowcytometer
 ) {
 
   # function to gate each plate ---------------------------------------------
@@ -106,6 +108,21 @@ extract_traits <- function(
       message("   gating algae ...")
       result$algae <- extr_traits(Subset(fsa,  gates$algae$algae_gate))
     }
+
+    result <- lapply(
+      result,
+      function(traits){
+        traits <- merge(
+          traits,
+          metadata_flowcytometer,
+          by.x = c("sample", "plate"),
+          by.y = c("sample", "plate"),
+          all.x = TRUE,
+          all.y = FALSE
+        )
+        return(traits)
+      }
+    )
 
     return(result)
   }
