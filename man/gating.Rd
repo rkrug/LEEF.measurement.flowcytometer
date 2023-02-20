@@ -4,7 +4,7 @@
 \alias{gating}
 \title{Do the gating}
 \usage{
-gating(gates_coordinates, fsa, flow.data, flowcytometer_metadata)
+gating(gates_coordinates, fsa, flow.data)
 }
 \arguments{
 \item{gates_coordinates}{gates co-ordinates as read from the file \code{gates_coordinates.csv}}

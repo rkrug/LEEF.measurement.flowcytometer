@@ -11,8 +11,7 @@
 gating <- function(
     gates_coordinates,
     fsa,
-    flow.data,
-    flowcytometer_metadata
+    flow.data
 ){
   #############################################################
   # <<<< BEGIN SCRIPT   #######################################

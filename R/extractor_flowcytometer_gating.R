@@ -63,8 +63,8 @@ extractor_flowcytometer_gating <- function(
 
   flow.data <- gating(
     gates_coordinates = utils::read.csv(file.path(input, "flowcytometer", "gates_coordinates.csv")),
-    fsa = file.path(file.path(output, "flowcytometer"), "flowcytometer_fsa_ungated.rds"),
-    flow.data = file.path(file.path(output, "flowcytometer"), "flowcytometer_ungated.csv")
+    fsa = readRDS(file.path(output, "flowcytometer", "flowcytometer_fsa_ungated.rds")),
+    flow.data = utils::read.csv(file.path(output, "flowcytometer", "flowcytometer_ungated.csv"))
   )$flow.data
 
 
