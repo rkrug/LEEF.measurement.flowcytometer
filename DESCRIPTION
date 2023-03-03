@@ -1,7 +1,7 @@
 Package: LEEF.measurement.flowcytometer
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 0.9.3
+Version: 0.9.4
 Authors@R: c(
   person(given = "Rainer M.", family = "Krug", email = "Rainer.Krug@uzh.ch", role = c("aut", "cre")),
   person("SNF Project 310030_188431", role = "fnd")

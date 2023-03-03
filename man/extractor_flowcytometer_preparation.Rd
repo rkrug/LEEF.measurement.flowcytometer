@@ -4,7 +4,7 @@
 \alias{extractor_flowcytometer_preparation}
 \title{Extractor flowcytometer preparation data}
 \usage{
-extractor_flowcytometer_preparation(input, output)
+extractor_flowcytometer_preparation(input, output, raw = FALSE)
 }
 \arguments{
 \item{input}{directory from which to read the data}

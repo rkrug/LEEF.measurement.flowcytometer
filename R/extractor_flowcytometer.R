@@ -13,7 +13,8 @@
 #'
 extractor_flowcytometer <- function(
   input,
-  output
+  output,
+  raw = FALSE
 ) {
   if ( length( list.files( file.path(input, "flowcytometer") ) ) == 0 ) {
     message("Empty or missing flowcytometer directory - nothing to do.")
@@ -52,7 +53,7 @@ extractor_flowcytometer <- function(
 
   ##
 
-  extractor_flowcytometer_preparation(input, output)
+  extractor_flowcytometer_preparation(input, output, raw = raw)
   extractor_flowcytometer_gating(input, output)
 
 # Finalize ----------------------------------------------------------------

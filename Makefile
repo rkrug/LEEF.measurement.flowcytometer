@@ -32,7 +32,7 @@ READMEHTML = Readme.html
 
 #############
 
-all: docs metadata build install
+all: doc metadata build install drat
 
 #############
 

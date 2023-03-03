@@ -18,7 +18,8 @@
 #'
 extractor_flowcytometer_preparation <- function(
     input,
-    output
+    output,
+    raw = FALSE
 ) {
   add_path <- file.path(output, "flowcytometer")
   dir.create(add_path, recursive = TRUE, showWarnings = FALSE)
@@ -163,20 +164,22 @@ extractor_flowcytometer_preparation <- function(
                              "tot_density_perml", "specname", "dilution_factor")]
   rownames(flow.data) <- NULL
 
-  # exclude values < 1 (RL: use FL1-A and FL3-A instead of -H; added line for FL4-A)
-  fsa <- flowCore::transform(
-    fsa,
-    flowCore::transformList(
-      c("FL1-A", "FL3-A", "FL4-A", "FSC-A", "SSC-A", "Width"),
-      truncateTransform("truncate at 1")
-    )
-  )
 
-  # log transform (RL: use FL1-A and FL3-A instead of -H; added line for FL4-A)
-  fsa <- flowCore::transform(
-    fsa,
-    flowCore::transformList(c("FL1-A", "FL3-A", "FL4-A", "FSC-A", "SSC-A", "Width"), "log10")
-  )
+  if (!raw){
+    # exclude values < 1 (RL: use FL1-A and FL3-A instead of -H; added line for FL4-A)
+    fsa <- flowCore::transform(
+      fsa,
+      flowCore::transformList(
+        c("FL1-A", "FL3-A", "FL4-A", "FSC-A", "SSC-A", "Width"),
+        truncateTransform("truncate at 1")
+      )
+    )
+    # log transform (RL: use FL1-A and FL3-A instead of -H; added line for FL4-A)
+    fsa <- flowCore::transform(
+      fsa,
+      flowCore::transformList(c("FL1-A", "FL3-A", "FL4-A", "FSC-A", "SSC-A", "Width"), "log10")
+    )
+  }
 
   #############################################################
   # >>>> END SCRIPT   #########################################
