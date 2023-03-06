@@ -15,7 +15,7 @@ extract_traits(
 
 \item{particles}{\code{character} vector containing the groups to extract.
 Supported are \code{"bacteria"}, \code{"LNA"}, \code{"MNA"}, \code{"HNA"},
-\code{"algae"}.}
+\code{"algae"} and \code{"all"} which does no gating.}
 
 \item{metadata_flowcytometer}{the content of the file \code{metadata_flowcytometer.csv} which will be linked into the traits}
 }

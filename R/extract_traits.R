@@ -8,7 +8,7 @@
 #' @param input directory from which to read the data
 #' @param particles \code{character} vector containing the groups to extract.
 #'   Supported are \code{"bacteria"}, \code{"LNA"}, \code{"MNA"}, \code{"HNA"},
-#'   \code{"algae"}.
+#'   \code{"algae"} and \code{"all"} which does no gating.
 #' @param metadata_flowcytometer the content of the file \code{metadata_flowcytometer.csv} which will be linked into the traits
 #'
 #' @return invisibly \code{TRUE} when completed successful
@@ -78,6 +78,9 @@ extract_traits <- function(
 
     bacteria_pop <- NULL
 
+    if ("all" %in% particles){
+      result$allk <- extr_traits(fsa)
+    }
     if ("bacteria" %in% particles){
       message("   gating bacteria ...")
       bacteria_pop <- Subset(fsa, gates$bacteria$bacteria_gate)
