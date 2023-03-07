@@ -79,7 +79,7 @@ extract_traits <- function(
     bacteria_pop <- NULL
 
     if ("all" %in% particles){
-      result$allk <- extr_traits(fsa)
+      result$all <- extr_traits(fsa)
     }
     if ("bacteria" %in% particles){
       message("   gating bacteria ...")
