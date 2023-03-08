@@ -46,7 +46,7 @@ dens <- function(
   # ABUNDANCE DYNAMICS ------------------------------------------------------
 
   # applying filter to whole flowSet
-  result <- flowCore::filter(fsa, gates$bacteria_gate)
+  result <- flowCore::filter(fsa, gates$bacteria$bacteria_gate)
 
   # extract absolute counts
   l <- lapply(result, flowCore::summary)
@@ -66,12 +66,12 @@ dens <- function(
   flow.data <- flow.data[order(flow.data$date, flow.data$sample_letter, flow.data$sample_number), ]
 
   # subset data based on gate for bacteria
-  subset.bacteria <- flowCore::Subset(fsa, gates$bacteria_gate)
+  subset.bacteria <- flowCore::Subset(fsa, gates$bacteria$bacteria_gate)
 
   # applying filter to bacteria to get the three bacteria populations
-  LNA <- flowCore::filter(subset.bacteria, gates$rg_LNA)
-  MNA <- flowCore::filter(subset.bacteria, gates$rg_MNA)
-  HNA <- flowCore::filter(subset.bacteria, gates$rg_HNA)
+  LNA <- flowCore::filter(subset.bacteria, gates$bacteria$rg_LNA)
+  MNA <- flowCore::filter(subset.bacteria, gates$bacteria$rg_MNA)
+  HNA <- flowCore::filter(subset.bacteria, gates$bacteria$rg_HNA)
 
   # extract absolute counts
   l_LNA <- lapply(LNA, flowCore::summary)
@@ -107,8 +107,8 @@ dens <- function(
 
   # get the algae
   #algae <- flowCore::filter(fsa, algae_gate)
-  subset.algae <- flowCore::Subset(fsa, !gates$bacteria_gate)
-  algae <- flowCore::filter(subset.algae, gates$algae_gate)
+  subset.algae <- flowCore::Subset(fsa, !gates$bacteria$bacteria_gate)
+  algae <- flowCore::filter(subset.algae, gates$algae$algae_gate)
 
 
   # extract absolute counts

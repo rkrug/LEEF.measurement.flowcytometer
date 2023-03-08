@@ -124,7 +124,7 @@ extract_traits <- function(
     }
     if ("algae" %in% particles){
       message("   gating algae ...")
-      result$algae <- extr_traits(Subset(fsa,  gates$algae$algae_gate))
+      result$algae <- extr_traits(Subset(fsa,  gates$algae$algae$algae_gate))
     }
 
     result <- lapply(

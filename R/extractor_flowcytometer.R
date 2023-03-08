@@ -59,8 +59,18 @@ extractor_flowcytometer <- function(
 
   ##
 
-  extractor_flowcytometer_preparation(input, output, raw = raw)
-  extractor_flowcytometer_density(input, output)
+  extractor_flowcytometer_preparation(
+    input,
+    output,
+    raw = raw,
+    excl_FSCA_0 = excl_FSCA_0
+  )
+  extractor_flowcytometer_density(
+    input,
+    output,
+    excl_FSCA_0 = excl_FSCA_0,
+    use_H = use_H
+  )
 
 # Finalize ----------------------------------------------------------------
 
