@@ -10,6 +10,10 @@
 #'   Supported are \code{"bacteria"}, \code{"LNA"}, \code{"MNA"}, \code{"HNA"},
 #'   \code{"algae"} and \code{"all"} which does no gating.
 #' @param metadata_flowcytometer the content of the file \code{metadata_flowcytometer.csv} which will be linked into the traits
+#' @param excl_FSCA_0 boolean. If \code{TRUE}, \code{FSA.A <= 0} will be fitered out by using
+#'   a rectangular filter
+#'   \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))}
+#' @param use_H if \code{TRUE}, gating will be done using \code{height}, otherwie \code{area}
 #'
 #' @return invisibly \code{TRUE} when completed successful
 #'
@@ -26,7 +30,9 @@
 extract_traits <- function(
     input,
     particles = c("bacteria", "LNA", "MNA", "HNA", "algae"),
-    metadata_flowcytometer
+    metadata_flowcytometer,
+    excl_FSCA_0 = FALSE,
+    use_H = FALSE
 ) {
 
   # function to gate each plate ---------------------------------------------
@@ -70,7 +76,16 @@ extract_traits <- function(
     message("   reading data  ...")
     fsa <- readRDS(file = file.path(input, paste0("flowcytometer_fsa_ungated.rds")))
 
-    gates <- calculate_gates(input)
+    if (excl_FSCA_0){
+      g0 <- flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))
+      fsa <- flowCore::Subset(fsa, g0)
+    }
+
+    if (use_H) {
+      gates <- calculate_gates_H(input)
+    } else {
+      gates <- calculate_gates(input)
+    }
 
     # The Subsetting and Extraction ------------------------------------------------------------
 

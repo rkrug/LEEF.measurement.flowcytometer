@@ -1,17 +1,21 @@
-#' Do the gating using area (.A)
+#' Get density using \code{height} for gating
 #'
 #' @param gates_coordinates gates co-ordinates as read from the file \code{gates_coordinates.csv}
 #' @param fsa as read from \code{flowcytometer_fsa_ungated.rds}
 #' @param flow.data as read from \code{flowcytometer_ungated.csv}
+#' @param excl_FSCA_0 boolean. If \code{TRUE}, \code{FSA.A <= 0} will be fitered out by using
+#'   a rectangular filter
+#'   \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))}
 #'
 #' @return  gated \code{flow.data} density as saved in \code{flowcytometer_density.csv}
 #' @export
 #'
 #' @examples
-gating <- function(
+dens_H <- function(
     gates_coordinates,
     fsa,
-    flow.data
+    flow.data,
+    excl_FSCA_0 = TRUE
 ){
   #############################################################
   # <<<< BEGIN SCRIPT   #######################################
@@ -21,33 +25,9 @@ gating <- function(
 
   #RL: defining gates
 
-  # bacteria gate
-  polyGate_bacteria <- as.matrix(gates_coordinates[1:4, 1:2])
-  colnames(polyGate_bacteria) <- c("FL1-A", "FL3-A")
-  bacteria_gate <- flowCore::polygonGate(filterId = "Bacteria", .gate = polyGate_bacteria)
-
-  # gate for different size classes of bacteria
-  LNA_coordinates <- as.matrix(gates_coordinates[, 3])
-  LNA_coordinates <- na.omit(LNA_coordinates)
-  colnames(LNA_coordinates) <- c("FL1-A")
-
-  MNA_coordinates <- as.matrix(gates_coordinates[, 4])
-  MNA_coordinates <- na.omit(MNA_coordinates)
-  colnames(MNA_coordinates) <- c("FL1-A")
-
-  HNA_coordinates <- as.matrix(gates_coordinates[, 5])
-  HNA_coordinates <- na.omit(HNA_coordinates)
-  colnames(HNA_coordinates) <- c("FL1-A")
-
-  rg_LNA <- flowCore::rectangleGate("FL1-A" = LNA_coordinates, filterId = "LNA")
-  rg_MNA <- flowCore::rectangleGate("FL1-A" = MNA_coordinates, filterId = "MNA")
-  rg_HNA <- flowCore::rectangleGate("FL1-A" = HNA_coordinates, filterId = "HNA")
+  gates <- calculate_gates(gates_coordinates = gates_coordinates)
 
 
-  # algae gate
-  polyGate_algae <- as.matrix(gates_coordinates[1:4, 6:7])
-  colnames(polyGate_algae) <- c("FL1-A", "FL4-A")
-  algae_gate <- flowCore::polygonGate(filterId = "Algae", .gate = polyGate_algae)
 
   # #----- HAVING A LOOK AT THE GATING -----#
 
@@ -62,7 +42,14 @@ gating <- function(
   # ABUNDANCE DYNAMICS ------------------------------------------------------
 
   # applying filter to whole flowSet
-  result <- flowCore::filter(fsa, bacteria_gate)
+
+
+  if (excl_FSCA_0){
+     g0 <- flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))
+     fsa <- flowCore::Subset(fsa, g0)
+  }
+
+  result <- flowCore::filter(fsa, gates$bacteria_gate)
 
   # extract absolute counts
   l <- lapply(result, flowCore::summary)
@@ -82,12 +69,12 @@ gating <- function(
   flow.data <- flow.data[order(flow.data$date, flow.data$sample_letter, flow.data$sample_number), ]
 
   # subset data based on gate for bacteria
-  subset.bacteria <- flowCore::Subset(fsa, bacteria_gate)
+  subset.bacteria <- flowCore::Subset(fsa, gates$bacteria_gate)
 
   # applying filter to bacteria to get the three bacteria populations
-  LNA <- flowCore::filter(subset.bacteria, rg_LNA)
-  MNA <- flowCore::filter(subset.bacteria, rg_MNA)
-  HNA <- flowCore::filter(subset.bacteria, rg_HNA)
+  LNA <- flowCore::filter(subset.bacteria, gates$rg_LNA)
+  MNA <- flowCore::filter(subset.bacteria, gates$rg_MNA)
+  HNA <- flowCore::filter(subset.bacteria, gates$rg_HNA)
 
   # extract absolute counts
   l_LNA <- lapply(LNA, flowCore::summary)
@@ -123,8 +110,8 @@ gating <- function(
 
   # get the algae
   #algae <- flowCore::filter(fsa, algae_gate)
-  subset.algae <- flowCore::Subset(fsa, !bacteria_gate)
-  algae <- flowCore::filter(subset.algae, algae_gate)
+  subset.algae <- flowCore::Subset(fsa, !gates$bacteria_gate)
+  algae <- flowCore::filter(subset.algae, gates$algae_gate)
 
 
   # extract absolute counts

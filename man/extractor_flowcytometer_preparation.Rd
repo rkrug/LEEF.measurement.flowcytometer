@@ -4,12 +4,21 @@
 \alias{extractor_flowcytometer_preparation}
 \title{Extractor flowcytometer preparation data}
 \usage{
-extractor_flowcytometer_preparation(input, output, raw = FALSE)
+extractor_flowcytometer_preparation(
+  input,
+  output,
+  raw = FALSE,
+  excl_FSCA_0 = FALSE
+)
 }
 \arguments{
 \item{input}{directory from which to read the data}
 
 \item{output}{directory to which to write the data}
+
+\item{excl_FSCA_0}{boolean. If \code{TRUE}, \code{FSA.A <= 0} will be fitered out by using
+a rectangular filter
+\code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))}}
 }
 \value{
 invisibly \code{TRUE} when completed successful

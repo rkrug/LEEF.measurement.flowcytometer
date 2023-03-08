@@ -11,7 +11,7 @@
 #' @export
 #'
 #' @examples
-calculate_gates <- function(
+calculate_gates_H <- function(
     input_dir,
     gates_coordinates = NULL
 ){
@@ -19,29 +19,31 @@ calculate_gates <- function(
     gates_coordinates <- utils::read.csv(file.path(input_dir, "gates_coordinates.csv"))
   }
 
+  gates_coordinates <- utils::read.csv(file.path(input_dir, "gates_coordinates.csv"))
+
   gates <- list()
 
   # bacteria gate
   polyGate_bacteria <- as.matrix(gates_coordinates[1:4, 1:2])
-  colnames(polyGate_bacteria) <- c("FL1-A", "FL3-A")
+  colnames(polyGate_bacteria) <- c("FL1-H", "FL3-H")
   bacteria_gate <- flowCore::polygonGate(filterId = "Bacteria", .gate = polyGate_bacteria)
 
   # gate for different size classes of bacteria
   LNA_coordinates <- as.matrix(gates_coordinates[, 3])
   LNA_coordinates <- na.omit(LNA_coordinates)
-  colnames(LNA_coordinates) <- c("FL1-A")
+  colnames(LNA_coordinates) <- c("FL1-H")
 
   MNA_coordinates <- as.matrix(gates_coordinates[, 4])
   MNA_coordinates <- na.omit(MNA_coordinates)
-  colnames(MNA_coordinates) <- c("FL1-A")
+  colnames(MNA_coordinates) <- c("FL1-H")
 
   HNA_coordinates <- as.matrix(gates_coordinates[, 5])
   HNA_coordinates <- na.omit(HNA_coordinates)
-  colnames(HNA_coordinates) <- c("FL1-A")
+  colnames(HNA_coordinates) <- c("FL1-H")
 
-  rg_LNA <- flowCore::rectangleGate("FL1-A" = LNA_coordinates, filterId = "LNA")
-  rg_MNA <- flowCore::rectangleGate("FL1-A" = MNA_coordinates, filterId = "MNA")
-  rg_HNA <- flowCore::rectangleGate("FL1-A" = HNA_coordinates, filterId = "HNA")
+  rg_LNA <- flowCore::rectangleGate("FL1-H" = LNA_coordinates, filterId = "LNA")
+  rg_MNA <- flowCore::rectangleGate("FL1-H" = MNA_coordinates, filterId = "MNA")
+  rg_HNA <- flowCore::rectangleGate("FL1-H" = HNA_coordinates, filterId = "HNA")
 
   gates$bacteria <- list(
     bacteria_gate = bacteria_gate,
@@ -52,7 +54,7 @@ calculate_gates <- function(
 
   # algae gate
   polyGate_algae <- as.matrix(gates_coordinates[1:4, 6:7])
-  colnames(polyGate_algae) <- c("FL1-A", "FL4-A")
+  colnames(polyGate_algae) <- c("FL1-H", "FL4-H")
   algae_gate <- flowCore::polygonGate(filterId = "Algae", .gate = polyGate_algae)
 
   gates$algae <- list(

@@ -1,4 +1,4 @@
-#' Extractor flowcytometer data
+#' Extractor flowcytometer density
 #'
 #'
 #' This function is extracting data to be added to the database
@@ -7,6 +7,10 @@
 #'
 #' @param input directory from which to read the data
 #' @param output directory to which to write the data
+#' @param excl_FSCA_0 boolean. If \code{TRUE}, \code{FSA.A <= 0} will be fitered out by using
+#'   a rectangular filter
+#'   \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))}
+#' @param use_H if \code{TRUE}, gating will be done using \code{height}, otherwie \code{area}
 #'
 #' @return invisibly \code{TRUE} when completed successful
 #'
@@ -21,9 +25,11 @@
 #' @import loggit
 #' @export
 #'
-extractor_flowcytometer_gating <- function(
+extractor_flowcytometer_density <- function(
     input,
-    output
+    output,
+    excl_FSCA_0 = FALSE,
+    use_H = FALSE
 ) {
   add_path <- file.path(output, "flowcytometer")
   dir.create(add_path, recursive = TRUE, showWarnings = FALSE)
@@ -61,12 +67,21 @@ extractor_flowcytometer_gating <- function(
   #############################################################
 
 
-  flow.data <- gating(
-    gates_coordinates = utils::read.csv(file.path(input, "flowcytometer", "gates_coordinates.csv")),
-    fsa = readRDS(file.path(output, "flowcytometer", "flowcytometer_fsa_ungated.rds")),
-    flow.data = utils::read.csv(file.path(output, "flowcytometer", "flowcytometer_ungated.csv"))
-  )$flow.data
-
+  if (use_H) {
+    flow.data <- dens_H(
+      gates_coordinates = utils::read.csv(file.path(input, "flowcytometer", "gates_coordinates.csv")),
+      fsa = readRDS(file.path(output, "flowcytometer", "flowcytometer_fsa_ungated.rds")),
+      flow.data = utils::read.csv(file.path(output, "flowcytometer", "flowcytometer_ungated.csv")),
+      excl_FSCA_0 = excl_FSCA_0
+    )$flow.data
+  } else {
+    flow.data <- dens(
+      gates_coordinates = utils::read.csv(file.path(input, "flowcytometer", "gates_coordinates.csv")),
+      fsa = readRDS(file.path(output, "flowcytometer", "flowcytometer_fsa_ungated.rds")),
+      flow.data = utils::read.csv(file.path(output, "flowcytometer", "flowcytometer_ungated.csv")),
+      excl_FSCA_0 = excl_FSCA_0
+    )$flow.data
+  }
 
 
   # SAVE --------------------------------------------------------------------

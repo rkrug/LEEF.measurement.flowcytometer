@@ -6,6 +6,10 @@
 #'
 #' @param input directory from which to read the data
 #' @param output directory to which to write the data
+#' @param excl_FSCA_0 boolean. If \code{TRUE}, \code{FSA.A <= 0} will be fitered out by using
+#'   a rectangular filter
+#'   \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))}
+#' @param use_H if \code{TRUE}, gating will be done using \code{height}, otherwie \code{area}
 #'
 #' @return invisibly \code{TRUE} when completed successful
 #'
@@ -14,7 +18,9 @@
 extractor_flowcytometer <- function(
   input,
   output,
-  raw = FALSE
+  raw = FALSE,
+  excl_FSCA_0 = FALSE,
+  use_H = FALSE
 ) {
   if ( length( list.files( file.path(input, "flowcytometer") ) ) == 0 ) {
     message("Empty or missing flowcytometer directory - nothing to do.")
@@ -54,7 +60,7 @@ extractor_flowcytometer <- function(
   ##
 
   extractor_flowcytometer_preparation(input, output, raw = raw)
-  extractor_flowcytometer_gating(input, output)
+  extractor_flowcytometer_density(input, output)
 
 # Finalize ----------------------------------------------------------------
 
