@@ -25,7 +25,7 @@ dens_H <- function(
 
   #RL: defining gates
 
-  gates <- calculate_gates(gates_coordinates = gates_coordinates)
+  gates <- calculate_gates_H(gates_coordinates = gates_coordinates)
 
 
 
@@ -69,7 +69,7 @@ dens_H <- function(
   flow.data <- flow.data[order(flow.data$date, flow.data$sample_letter, flow.data$sample_number), ]
 
   # subset data based on gate for bacteria
-  subset.bacteria <- flowCore::Subset(fsa, gates$bbacteria$acteria_gate)
+  subset.bacteria <- flowCore::Subset(fsa, gates$bacteria$bacteria_gate)
 
   # applying filter to bacteria to get the three bacteria populations
   LNA <- flowCore::filter(subset.bacteria, gates$bacteria$rg_LNA)

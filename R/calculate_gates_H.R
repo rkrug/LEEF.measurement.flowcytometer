@@ -19,7 +19,6 @@ calculate_gates_H <- function(
     gates_coordinates <- utils::read.csv(file.path(input_dir, "gates_coordinates.csv"))
   }
 
-  gates_coordinates <- utils::read.csv(file.path(input_dir, "gates_coordinates.csv"))
 
   gates <- list()
 
