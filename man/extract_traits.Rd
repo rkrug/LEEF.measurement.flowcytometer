@@ -5,11 +5,14 @@
 \title{Extractor flowcytometer data}
 \usage{
 extract_traits(
-  input,
+  input = NULL,
   particles = c("bacteria", "LNA", "MNA", "HNA", "algae"),
   metadata_flowcytometer,
   excl_FSCA_0 = FALSE,
-  use_H = FALSE
+  use_H = FALSE,
+  timestamp = yaml::read_yaml(file.path(input, "sample_metadata.yml"))$timestamp,
+  fsa = NULL,
+  gates_coordinates = NULL
 )
 }
 \arguments{
@@ -26,6 +29,12 @@ a rectangular filter
 \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))}}
 
 \item{use_H}{if \code{TRUE}, gating will be done using \code{height}, otherwie \code{area}}
+
+\item{timestamp}{timestamp. Default: read from \code{sample_metadata.yml}}
+
+\item{fsa}{if \code{NULL}, \code{fsa} will be read in, otherwise the \code{fsa}}
+
+\item{gates_coordinates}{if \code{NULL}, \code{gates_coordinates} will be read in, otherwise the \code{gates_coordinates}}
 }
 \value{
 invisibly \code{TRUE} when completed successful

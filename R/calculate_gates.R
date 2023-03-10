@@ -12,7 +12,7 @@
 #'
 #' @examples
 calculate_gates <- function(
-    input_dir,
+    input_dir = NULL,
     gates_coordinates = NULL
 ){
   if (is.null(gates_coordinates)) {

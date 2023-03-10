@@ -4,7 +4,7 @@
 \alias{calculate_gates}
 \title{Calculate gates based on gate co-ordinates in csv file using \code{area}}
 \usage{
-calculate_gates(input_dir, gates_coordinates = NULL)
+calculate_gates(input_dir = NULL, gates_coordinates = NULL)
 }
 \arguments{
 \item{input_dir}{directory which contains the file \code{gates_coordinates.csv}}

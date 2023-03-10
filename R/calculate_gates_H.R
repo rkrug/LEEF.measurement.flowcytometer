@@ -12,13 +12,12 @@
 #'
 #' @examples
 calculate_gates_H <- function(
-    input_dir,
+    input_dir = NULL,
     gates_coordinates = NULL
 ){
   if (is.null(gates_coordinates)) {
     gates_coordinates <- utils::read.csv(file.path(input_dir, "gates_coordinates.csv"))
   }
-
 
   gates <- list()
 

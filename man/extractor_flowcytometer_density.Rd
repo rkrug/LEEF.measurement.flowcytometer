@@ -5,10 +5,14 @@
 \title{Extractor flowcytometer density}
 \usage{
 extractor_flowcytometer_density(
-  input,
-  output,
+  input = NULL,
+  output = ".",
   excl_FSCA_0 = FALSE,
-  use_H = FALSE
+  use_H = FALSE,
+  gates_coordinates = NULL,
+  fsa = NULL,
+  flow.data = NULL,
+  dens_back = FALSE
 )
 }
 \arguments{
@@ -21,6 +25,14 @@ a rectangular filter
 \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))}}
 
 \item{use_H}{if \code{TRUE}, gating will be done using \code{height}, otherwie \code{area}}
+
+\item{gates_coordinates}{if \code{NULL}, \code{gates_coordinates} will be read in, otherwise the \code{gates_coordinates}}
+
+\item{fsa}{if \code{NULL}, \code{fsa} will be read in, otherwise the \code{fsa}}
+
+\item{flow.data}{if \code{NULL}, \code{flow.data} will be read in, otherwise the \code{flow.data}}
+
+\item{dens_back}{if \code{FALSE}, density will be saved in "flowcytometer_density.csv", otherwise it will be returned}
 }
 \value{
 invisibly \code{TRUE} when completed successful

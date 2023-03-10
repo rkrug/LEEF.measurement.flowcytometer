@@ -14,6 +14,9 @@
 #'   a rectangular filter
 #'   \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))}
 #' @param use_H if \code{TRUE}, gating will be done using \code{height}, otherwie \code{area}
+#' @param timestamp timestamp. Default: read from \code{sample_metadata.yml}
+#' @param fsa if \code{NULL}, \code{fsa} will be read in, otherwise the \code{fsa}
+#' @param gates_coordinates if \code{NULL}, \code{gates_coordinates} will be read in, otherwise the \code{gates_coordinates}
 #'
 #' @return invisibly \code{TRUE} when completed successful
 #'
@@ -28,11 +31,14 @@
 #' @export
 #'
 extract_traits <- function(
-    input,
+    input = NULL,
     particles = c("bacteria", "LNA", "MNA", "HNA", "algae"),
     metadata_flowcytometer,
     excl_FSCA_0 = FALSE,
-    use_H = FALSE
+    use_H = FALSE,
+    timestamp = yaml::read_yaml(file.path(input, "sample_metadata.yml"))$timestamp,
+    fsa = NULL,
+    gates_coordinates = NULL
 ) {
 
   # function to gate each plate ---------------------------------------------
@@ -67,24 +73,30 @@ extract_traits <- function(
       )
 
       traits <- do.call(rbind, traits)
-      traits$timestamp <- yaml::read_yaml(file.path(input, "sample_metadata.yml"))$timestamp
+      traits$timestamp <- timestamp
       return(traits)
     }
 
     #  read data files ----------------------------------------------------------
 
     message("   reading data  ...")
-    fsa <- readRDS(file = file.path(input, paste0("flowcytometer_fsa_ungated.rds")))
+    if (is.null(fsa)){
+      fsa <- readRDS(file = file.path(input, paste0("flowcytometer_fsa_ungated.rds")))
+    }
 
     if (excl_FSCA_0){
       g0 <- flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))
       fsa <- flowCore::Subset(fsa, g0)
     }
 
+    if (is.null(gates_coordinates)){
+      gates_coordinates <- utils::read.csv(file.path(input_dir, "gates_coordinates.csv"))
+    }
+
     if (use_H) {
-      gates <- calculate_gates_H(input)
+      gates <- calculate_gates_H(gates_coordinates = gates_coordinates)
     } else {
-      gates <- calculate_gates(input)
+      gates <- calculate_gates(gates_coordinates = gates_coordinates)
     }
 
     # The Subsetting and Extraction ------------------------------------------------------------
