@@ -116,37 +116,37 @@ extract_traits <- function(
     bacteria_pop <- NULL
 
     if ("all" %in% particles){
-      result$all <- extr_traits(fsa)
+      result$all <- extr_traits(fsa, wellid_keyword = wellid_keyword)
     }
     if ("bacteria" %in% particles){
       message("   gating bacteria ...")
       bacteria_pop <- Subset(fsa, gates$bacteria$bacteria_gate)
-      result$bacteria <- extr_traits(bacteria_pop)
+      result$bacteria <- extr_traits(bacteria_pop, wellid_keyword = wellid_keyword)
     }
     if ("LNA" %in% particles){
       message("   gating LNA ...")
       if (is.null(bacteria_pop)){
         bacteria_pop <- Subset(fsa, gates$bacteria$bacteria_gate)
       }
-      result$LNA <- extr_traits(Subset(bacteria_pop, gates$bacteria$rg_LNA))
+      result$LNA <- extr_traits(Subset(bacteria_pop, gates$bacteria$rg_LNA), wellid_keyword = wellid_keyword)
     }
     if ("MNA" %in% particles){
       message("   gating MNA ...")
       if (is.null(bacteria_pop)){
         bacteria_pop <- Subset(fsa, gates$bacteria$bacteria_gate)
       }
-      result$MNA <- extr_traits(Subset(bacteria_pop, gates$bacteria$rg_MNA))
+      result$MNA <- extr_traits(Subset(bacteria_pop, gates$bacteria$rg_MNA), wellid_keyword = wellid_keyword)
     }
     if ("HNA" %in% particles){
       message("   gating HNA ...")
       if (is.null(bacteria_pop)){
         bacteria_pop <- Subset(fsa, gates$bacteria$bacteria_gate)
       }
-      result$HNA <- extr_traits(Subset(bacteria_pop, gates$bacteria$rg_HNA))
+      result$HNA <- extr_traits(Subset(bacteria_pop, gates$bacteria$rg_HNA), wellid_keyword = wellid_keyword)
     }
     if ("algae" %in% particles){
       message("   gating algae ...")
-      result$algae <- extr_traits(Subset(fsa,  gates$algae$algae$algae_gate))
+      result$algae <- extr_traits(Subset(fsa,  gates$algae$algae$algae_gate), wellid_keyword = wellid_keyword)
     }
 
     result <- lapply(
