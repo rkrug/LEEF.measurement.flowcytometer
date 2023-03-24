@@ -9,14 +9,21 @@
 #' @param particles \code{character} vector containing the groups to extract.
 #'   Supported are \code{"bacteria"}, \code{"LNA"}, \code{"MNA"}, \code{"HNA"},
 #'   \code{"algae"} and \code{"all"} which does no gating.
-#' @param metadata_flowcytometer the content of the file \code{metadata_flowcytometer.csv} which will be linked into the traits
-#' @param excl_FSCA_0 boolean. If \code{TRUE}, \code{FSA.A <= 0} will be fitered out by using
-#'   a rectangular filter
-#'   \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))}
-#' @param use_H if \code{TRUE}, gating will be done using \code{height}, otherwie \code{area}
+#' @param metadata_flowcytometer the content of the file
+#'   \code{metadata_flowcytometer.csv} which will be linked into the traits
+#' @param excl_FSCA_0 boolean. If \code{TRUE}, \code{FSA.A <= 0} will be fitered
+#'   out by using a rectangular filter
+#'   \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" =
+#'   c(0.00000000001, +Inf))}
+#' @param use_H if \code{TRUE}, gating will be done using \code{height},
+#'   otherwie \code{area}
 #' @param timestamp timestamp. Default: read from \code{sample_metadata.yml}
-#' @param fsa if \code{NULL}, \code{fsa} will be read in, otherwise the \code{fsa}
-#' @param gates_coordinates if \code{NULL}, \code{gates_coordinates} will be read in, otherwise the \code{gates_coordinates}
+#' @param fsa if \code{NULL}, \code{fsa} will be read in, otherwise the
+#'   \code{fsa}
+#' @param gates_coordinates if \code{NULL}, \code{gates_coordinates} will be
+#'   read in, otherwise the \code{gates_coordinates}
+#' @param wellid_keyword the kwyword which is used to identify the well ID.
+#'   Usually "$WELLID" (default), but for the EAWAG Flowcytometer it is "$SMNO".
 #'
 #' @return invisibly \code{TRUE} when completed successful
 #'
@@ -38,25 +45,28 @@ extract_traits <- function(
     use_H = FALSE,
     timestamp = yaml::read_yaml(file.path(input, "sample_metadata.yml"))$timestamp,
     fsa = NULL,
-    gates_coordinates = NULL
+    gates_coordinates = NULL,
+    wellid_keyword = "$WELLID"
 ) {
 
   # function to gate each plate ---------------------------------------------
 
   traits <- function(
     input,
-    particles
+    particles,
+    wellid_keyword
   )  {
     # extraction function -----------------------------------------------------
 
     extr_traits <- function(
-    pop
+      pop,
+      wellid_keyword
     ){
       traits <- flowCore::fsApply(
         pop,
         function(p){
           result <- list()
-          result$sample <- unlist(flowCore::keyword(p, "$WELLID"))
+          result$sample <- unlist(flowCore::keyword(p, wellid_keyword))
           x <- exprs(p)
           if (nrow(x) > 0) {
             result <- suppressWarnings(
@@ -160,7 +170,7 @@ extract_traits <- function(
 
   # Do the trait extraction --------------------------------------------
 
-  results <- traits(input, particles)
+  results <- traits(input, particles, wellid_keyword)
 
   # Finalize ----------------------------------------------------------------
 

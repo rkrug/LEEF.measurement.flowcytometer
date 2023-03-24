@@ -12,7 +12,8 @@ extract_traits(
   use_H = FALSE,
   timestamp = yaml::read_yaml(file.path(input, "sample_metadata.yml"))$timestamp,
   fsa = NULL,
-  gates_coordinates = NULL
+  gates_coordinates = NULL,
+  wellid_keyword = "$WELLID"
 )
 }
 \arguments{
@@ -22,19 +23,27 @@ extract_traits(
 Supported are \code{"bacteria"}, \code{"LNA"}, \code{"MNA"}, \code{"HNA"},
 \code{"algae"} and \code{"all"} which does no gating.}
 
-\item{metadata_flowcytometer}{the content of the file \code{metadata_flowcytometer.csv} which will be linked into the traits}
+\item{metadata_flowcytometer}{the content of the file
+\code{metadata_flowcytometer.csv} which will be linked into the traits}
 
-\item{excl_FSCA_0}{boolean. If \code{TRUE}, \code{FSA.A <= 0} will be fitered out by using
-a rectangular filter
-\code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))}}
+\item{excl_FSCA_0}{boolean. If \code{TRUE}, \code{FSA.A <= 0} will be fitered
+out by using a rectangular filter
+\code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" =
+c(0.00000000001, +Inf))}}
 
-\item{use_H}{if \code{TRUE}, gating will be done using \code{height}, otherwie \code{area}}
+\item{use_H}{if \code{TRUE}, gating will be done using \code{height},
+otherwie \code{area}}
 
 \item{timestamp}{timestamp. Default: read from \code{sample_metadata.yml}}
 
-\item{fsa}{if \code{NULL}, \code{fsa} will be read in, otherwise the \code{fsa}}
+\item{fsa}{if \code{NULL}, \code{fsa} will be read in, otherwise the
+\code{fsa}}
 
-\item{gates_coordinates}{if \code{NULL}, \code{gates_coordinates} will be read in, otherwise the \code{gates_coordinates}}
+\item{gates_coordinates}{if \code{NULL}, \code{gates_coordinates} will be
+read in, otherwise the \code{gates_coordinates}}
+
+\item{wellid_keyword}{the kwyword which is used to identify the well ID.
+Usually "$WELLID" (default), but for the EAWAG Flowcytometer it is "$SMNO".}
 }
 \value{
 invisibly \code{TRUE} when completed successful
