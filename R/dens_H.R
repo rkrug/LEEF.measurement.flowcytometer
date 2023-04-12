@@ -3,9 +3,9 @@
 #' @param gates_coordinates gates co-ordinates as read from the file \code{gates_coordinates.csv}
 #' @param fsa as read from \code{flowcytometer_fsa_ungated.rds}
 #' @param flow.data as read from \code{flowcytometer_ungated.csv}
-#' @param excl_FSCA_0 boolean. If \code{TRUE}, \code{FSA.A <= 0} will be fitered out by using
+#' @param min_FSC.A numeric. If \code{!NULL}, \code{FSA.A <= min_FSC.A} will be fitered out by using
 #'   a rectangular filter
-#'   \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))}
+#'   \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(min_FSC.A, +Inf))}
 #'
 #' @return  gated \code{flow.data} density as saved in \code{flowcytometer_density.csv}
 #' @export
@@ -15,7 +15,7 @@ dens_H <- function(
     gates_coordinates,
     fsa,
     flow.data,
-    excl_FSCA_0 = TRUE
+    min_FSC.A = 0.0000000001
 ){
   #############################################################
   # <<<< BEGIN SCRIPT   #######################################
@@ -44,8 +44,8 @@ dens_H <- function(
   # applying filter to whole flowSet
 
 
-  if (excl_FSCA_0){
-     g0 <- flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))
+  if (!is.null(min_FSC.A)){
+     g0 <- flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(min_FSC.A, +Inf))
      fsa <- flowCore::Subset(fsa, g0)
   }
 

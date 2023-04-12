@@ -11,10 +11,9 @@
 #'   \code{"algae"} and \code{"all"} which does no gating.
 #' @param metadata_flowcytometer the content of the file
 #'   \code{metadata_flowcytometer.csv} which will be linked into the traits
-#' @param excl_FSCA_0 boolean. If \code{TRUE}, \code{FSA.A <= 0} will be fitered
-#'   out by using a rectangular filter
-#'   \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" =
-#'   c(0.00000000001, +Inf))}
+#' @param min_FSC.A numeric. If \code{!NULL}, \code{FSA.A <= min_FSC.A} will be fitered out by using
+#'   a rectangular filter
+#'   \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(min_FSC.A, +Inf))}
 #' @param use_H if \code{TRUE}, gating will be done using \code{height},
 #'   otherwie \code{area}
 #' @param timestamp timestamp. Default: read from \code{sample_metadata.yml}
@@ -41,7 +40,7 @@ extract_traits <- function(
     input = NULL,
     particles = c("bacteria", "LNA", "MNA", "HNA", "algae"),
     metadata_flowcytometer,
-    excl_FSCA_0 = FALSE,
+    min_FSC.A = NULL,
     use_H = FALSE,
     timestamp = yaml::read_yaml(file.path(input, "sample_metadata.yml"))$timestamp,
     fsa = NULL,
@@ -94,8 +93,8 @@ extract_traits <- function(
       fsa <- readRDS(file = file.path(input, paste0("flowcytometer_fsa_ungated.rds")))
     }
 
-    if (excl_FSCA_0){
-      g0 <- flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))
+    if (!is.null(min_FSC.A)){
+      g0 <- flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(min_FSC.A, +Inf))
       fsa <- flowCore::Subset(fsa, g0)
     }
 

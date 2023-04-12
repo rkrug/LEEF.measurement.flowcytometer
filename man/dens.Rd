@@ -4,7 +4,7 @@
 \alias{dens}
 \title{Get density using \code{area} for gating}
 \usage{
-dens(gates_coordinates, fsa, flow.data, excl_FSCA_0 = TRUE)
+dens(gates_coordinates, fsa, flow.data, min_FSC.A = 1e-10)
 }
 \arguments{
 \item{gates_coordinates}{gates co-ordinates as read from the file \code{gates_coordinates.csv}}
@@ -13,9 +13,9 @@ dens(gates_coordinates, fsa, flow.data, excl_FSCA_0 = TRUE)
 
 \item{flow.data}{as read from \code{flowcytometer_ungated.csv}}
 
-\item{excl_FSCA_0}{boolean. If \code{TRUE}, \code{FSA.A <= 0} will be fitered out by using
+\item{min_FSC.A}{numeric. If \code{!NULL}, \code{FSA.A <= min_FSC.A} will be fitered out by using
 a rectangular filter
-\code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))}}
+\code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(min_FSC.A, +Inf))}}
 }
 \value{
 gated \code{flow.data} density as saved in \code{flowcytometer_density.csv}

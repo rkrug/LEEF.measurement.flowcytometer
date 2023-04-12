@@ -7,9 +7,9 @@
 #'
 #' @param input directory from which to read the data
 #' @param output directory to which to write the data
-#' @param excl_FSCA_0 boolean. If \code{TRUE}, \code{FSA.A <= 0} will be fitered out by using
+#' @param min_FSC.A numeric. If \code{!NULL}, \code{FSA.A <= min_FSC.A} will be fitered out by using
 #'   a rectangular filter
-#'   \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))}
+#'   \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(min_FSC.A, +Inf))}
 #' @param use_H if \code{TRUE}, gating will be done using \code{height}, otherwie \code{area}
 #' @param gates_coordinates if \code{NULL}, \code{gates_coordinates} will be read in, otherwise the \code{gates_coordinates}
 #' @param fsa if \code{NULL}, \code{fsa} will be read in, otherwise the \code{fsa}
@@ -32,7 +32,7 @@
 extractor_flowcytometer_density <- function(
     input = NULL,
     output = ".",
-    excl_FSCA_0 = FALSE,
+    min_FSC.A = NULL,
     use_H = FALSE,
     gates_coordinates = NULL,
     fsa = NULL,
@@ -91,14 +91,14 @@ extractor_flowcytometer_density <- function(
       gates_coordinates = gates_coordinates,
       fsa = fsa,
       flow.data = flow.data,
-      excl_FSCA_0 = excl_FSCA_0
+      min_FSC.A = min_FSC.A
     )$flow.data
   } else {
     flow.data <- dens(
       gates_coordinates = gates_coordinates,
       fsa = fsa,
       flow.data = flow.data,
-      excl_FSCA_0 = excl_FSCA_0
+      min_FSC.A = min_FSC.A
     )$flow.data
   }
 

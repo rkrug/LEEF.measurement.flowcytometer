@@ -8,7 +8,7 @@ extractor_flowcytometer_preparation(
   input,
   output,
   raw = FALSE,
-  excl_FSCA_0 = FALSE
+  min_FSC.A = NULL
 )
 }
 \arguments{
@@ -16,9 +16,9 @@ extractor_flowcytometer_preparation(
 
 \item{output}{directory to which to write the data}
 
-\item{excl_FSCA_0}{boolean. If \code{TRUE}, \code{FSA.A <= 0} will be fitered out by using
+\item{min_FSC.A}{numeric. If \code{!NULL}, \code{FSA.A <= min_FSC.A} will be fitered out by using
 a rectangular filter
-\code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))}}
+\code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(min_FSC.A, +Inf))}}
 }
 \value{
 invisibly \code{TRUE} when completed successful

@@ -6,9 +6,9 @@
 #'
 #' @param input directory from which to read the data
 #' @param output directory to which to write the data
-#' @param excl_FSCA_0 boolean. If \code{TRUE}, \code{FSA.A <= 0} will be fitered out by using
+#' @param min_FSC.A numeric. If \code{!NULL}, \code{FSA.A <= min_FSC.A} will be fitered out by using
 #'   a rectangular filter
-#'   \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))}
+#'   \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(min_FSC.A, +Inf))}
 #' @param use_H if \code{TRUE}, gating will be done using \code{height}, otherwie \code{area}
 #'
 #' @return invisibly \code{TRUE} when completed successful
@@ -19,7 +19,7 @@ extractor_flowcytometer <- function(
   input,
   output,
   raw = FALSE,
-  excl_FSCA_0 = FALSE,
+  min_FSC.A = NULL,
   use_H = FALSE
 ) {
   if ( length( list.files( file.path(input, "flowcytometer") ) ) == 0 ) {
@@ -63,12 +63,12 @@ extractor_flowcytometer <- function(
     input,
     output,
     raw = raw,
-    excl_FSCA_0 = excl_FSCA_0
+    min_FSC.A = min_FSC.A
   )
   extractor_flowcytometer_density(
     input,
     output,
-    excl_FSCA_0 = excl_FSCA_0,
+    min_FSC.A = min_FSC.A,
     use_H = use_H
   )
 

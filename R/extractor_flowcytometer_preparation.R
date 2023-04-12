@@ -7,9 +7,9 @@
 #'
 #' @param input directory from which to read the data
 #' @param output directory to which to write the data
-#' @param excl_FSCA_0 boolean. If \code{TRUE}, \code{FSA.A <= 0} will be fitered out by using
+#' @param min_FSC.A numeric. If \code{!NULL}, \code{FSA.A <= min_FSC.A} will be fitered out by using
 #'   a rectangular filter
-#'   \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))}
+#'   \code{flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(min_FSC.A, +Inf))}
 #'
 #' @return invisibly \code{TRUE} when completed successful
 #'
@@ -23,7 +23,7 @@ extractor_flowcytometer_preparation <- function(
     input,
     output,
     raw = FALSE,
-    excl_FSCA_0 = FALSE
+    min_FSC.A = NULL
 ) {
   add_path <- file.path(output, "flowcytometer")
   dir.create(add_path, recursive = TRUE, showWarnings = FALSE)
@@ -110,8 +110,8 @@ extractor_flowcytometer_preparation <- function(
     files = fcs_files
   )
 
-  if (excl_FSCA_0){
-    g0 <- flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(0.00000000001, +Inf))
+  if (!is.null(min_FSC.A)){
+    g0 <- flowCore::rectangleGate(filterId="filter_out_0", "FSC-A" = c(min_FSC.A, +Inf))
     fsa <- flowCore::Subset(fsa, g0)
   }
 
