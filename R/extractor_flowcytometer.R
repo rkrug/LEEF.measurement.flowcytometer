@@ -12,10 +12,9 @@
 #' @export
 #'
 extractor_flowcytometer <- function(
-  input,
-  output
-) {
-  if ( length( list.files( file.path(input, "flowcytometer") ) ) == 0 ) {
+    input,
+    output) {
+  if (length(list.files(file.path(input, "flowcytometer"))) == 0) {
     message("Empty or missing flowcytometer directory - nothing to do.")
     message("done")
     message("########################################################")
@@ -31,33 +30,31 @@ extractor_flowcytometer <- function(
 
   ##
   suppressWarnings({
-      processing <- file.path(
-        normalizePath(output), "flowcytometer",
-        paste0("EXTRACTING.FLOWCYTOMETER", ".PROCESSING")
-      )
-      error <- file.path(
-        normalizePath(output), "flowcytometer",
-        paste0("ERROR.EXTRACTING.FLOWCYTOMETER", ".ERROR")
-      )
-      file.create(processing)
-    }
-  )
+    processing <- file.path(
+      normalizePath(output), "flowcytometer",
+      paste0("EXTRACTING.FLOWCYTOMETER", ".PROCESSING")
+    )
+    error <- file.path(
+      normalizePath(output), "flowcytometer",
+      paste0("ERROR.EXTRACTING.FLOWCYTOMETER", ".ERROR")
+    )
+    file.create(processing)
+  })
   on.exit({
-      if (file.exists(processing)) {
-        unlink(processing)
-        file.create(error)
-      }
+    if (file.exists(processing)) {
+      unlink(processing)
+      file.create(error)
     }
-  )
+  })
 
   ##
 
   extractor_flowcytometer_preparation(input, output)
-  extractor_flowcytometer_gating(input, output)
+  extractor_flowcytometer_density(input, output)
   extractor_flowcytometer_traits(input, output)
   ## Traits
 
-# Finalize ----------------------------------------------------------------
+  # Finalize ----------------------------------------------------------------
 
   unlink(processing)
   message("done")
