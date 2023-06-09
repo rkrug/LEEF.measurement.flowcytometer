@@ -65,6 +65,7 @@ extract_traits <- function(
         pop,
         function(p){
           result <- list()
+
           result$sample <- unlist(flowCore::keyword(p, wellid_keyword))
           x <- exprs(p)
           if (nrow(x) > 0) {
@@ -151,6 +152,12 @@ extract_traits <- function(
     result <- lapply(
       result,
       function(traits){
+        # In some cases, the sample was only 2 characters (e.g. "A1") instead of three ("A01")
+        # Here we simply assume that we can add a "0" in the middle.
+
+        i <- nchar(traits$sample) == 2
+        traits$sample[i] <- gsub('^(.{1})(.+)$', '\\10\\2', traits$sample[i])
+
         traits <- merge(
           traits,
           metadata_flowcytometer,
