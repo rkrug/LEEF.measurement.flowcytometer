@@ -1,6 +1,6 @@
-#' Extractor flowcytometer data
+#' Extract flowcytometer traits
 #'
-#'
+#' NOT USED IN PIPLELINE!!!!
 #' This function is extracting data to be added to the database
 #' (and therefore make accessible for further analysis and forecasting)
 #' from \code{.fcs} files.
@@ -33,18 +33,20 @@
 #' @importFrom plyr join
 #' @importFrom tidyr pivot_longer
 #' @importFrom magrittr %>%
+#' @import loggit
 #' @export
 #'
-extractor_traits <- function(input = NULL,
-                             particles = c("bacteria", "LNA", "MNA", "HNA", "algae"),
-                             metadata_flowcytometer,
-                             min_FSC.A = NULL,
-                             use_H = FALSE,
-                             timestamp = yaml::read_yaml(file.path(input, "sample_metadata.yml"))$timestamp,
-                             fsa_p1 = NULL,
-                             fsa_p2 = NULL,
-                             gates_coordinates = NULL,
-                             wellid_keyword = "$WELLID") {
+extract_traits <- function(
+    input = NULL,
+    particles = c("bacteria", "LNA", "MNA", "HNA", "algae"),
+    metadata_flowcytometer,
+    min_FSC.A = NULL,
+    use_H = FALSE,
+    timestamp = yaml::read_yaml(file.path(input, "sample_metadata.yml"))$timestamp,
+    fsa_p1 = NULL,
+    fsa_p2 = NULL,
+    gates_coordinates = NULL,
+    wellid_keyword = "$WELLID") {
     message("   reading data  ...")
 
     if (is.null(fsa_p1)) {
@@ -77,11 +79,14 @@ extractor_traits <- function(input = NULL,
 
     trait_plate <- function(plate_id,
                             fsa,
-                            gates = gates) {
+                            gates = gates,
+                            wellid_keyword = wellid_keyword,
+                            timestamp = timestamp) {
         # extraction function -----------------------------------------------------
 
         extr_traits <- function(pop,
-                                wellid_keyword) {
+                                wellid_keyword = wellid_keyword,
+                                timestamp = timestamp) {
             traits <- flowCore::fsApply(
                 pop,
                 function(p) {
@@ -104,7 +109,7 @@ extractor_traits <- function(input = NULL,
             )
 
             traits <- do.call(rbind, traits)
-            traits$timestamp <- yaml::read_yaml(file.path(input, "flowcytometer", "sample_metadata.yml"))$timestamp
+            traits$timestamp <- timestamp
             return(traits)
         }
 
@@ -117,13 +122,13 @@ extractor_traits <- function(input = NULL,
         # MNA_pop <- Subset(bacteria_pop, gates$bacteria$rg_MNA)
         # HNA_pop <- Subset(bacteria_pop, gates$bacteria$rg_HNA)
 
-        traits$bacteria <- extr_traits(bacteria_pop)
+        traits$bacteria <- extr_traits(bacteria_pop, wellid_keyword = wellid_keyword, timestamp = timestamp)
 
         # The Algae ---------------------------------------------------------------
 
         algae_pop <- Subset(fsa, gates$algae$algae_gate)
 
-        traits$algae <- extr_traits(bacteria_pop)
+        traits$algae <- extr_traits(bacteria_pop, wellid_keyword = wellid_keyword, timestamp = timestamp)
 
         return(traits)
     }
@@ -134,12 +139,16 @@ extractor_traits <- function(input = NULL,
     p1 <- trait_plate(
         plate_id = "p_1",
         fsa = fsa_p1,
-        gates = gates
+        gates = gates,
+        timestamp = timestamp,
+        wellid_keyword = wellid_keyword
     )
     p2 <- trait_plate(
         plate_id = "p_2",
         fsa = fsa_p2,
-        gates = gates
+        gates = gates,
+        timestamp = timestamp,
+        wellid_keyword = wellid_keyword
     )
 
     traits <- list()

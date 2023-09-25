@@ -61,38 +61,45 @@ extractor_flowcytometer_density <- function(
   #############################################################
   #############################################################
 
-  if (is.null(gates_coordinates)) {
-    gates_coordinates <- utils::read.csv(file.path(input, "flowcytometer", "gates_coordinates.csv"))
-  }
 
-  if (is.null(fsa)) {
-    fsa <- readRDS(file.path(output, "flowcytometer", "flowcytometer_fsa_ungated.rds"))
-  }
 
-  if (is.null(flow.data)) {
-    flow.data <- utils::read.csv(file.path(output, "flowcytometer", "flowcytometer_ungated.csv"))
-  }
 
   #############################################################
   #############################################################
 
   # function to gate each plate ---------------------------------------------
 
-  gate_plate <- function(plate,
-                         input,
-                         output,
-                         use_H) {
+  gate_plate <- function(
+      plate,
+      input,
+      output,
+      use_H,
+      gates_coordinates,
+      fsa = NULL,
+      flow.data = NULL) {
+    if (is.null(gates_coordinates)) {
+      gates_coordinates <- utils::read.csv(file.path(input, "flowcytometer", "gates_coordinates.csv"))
+    }
+
+    if (is.null(fsa)) {
+      fsa <- readRDS(file.path(output, "flowcytometer", paste0("flowcytometer_fsa_ungated.", plate, ".rds")))
+    }
+
+    if (is.null(flow.data)) {
+      flow.data <- readRDS(file.path(output, "flowcytometer", paste0("flowcytometer_ungated.", plate, ".rds")))
+    }
+
     if (use_H) {
       gated <- dens_H(
-        gates_coordinates = utils::read.csv(file.path(input, "flowcytometer", "gates_coordinates.csv")),
-        fsa = file.path(file.path(output, "flowcytometer"), paste0("flowcytometer_fsa_ungated.", plate, ".rds")),
-        flow.data = file.path(file.path(output, "flowcytometer"), paste0("flowcytometer_ungated.", plate, ".rds"))
+        gates_coordinates = gates_coordinates,
+        fsa = fsa,
+        flow.data = flow.data
       )
     } else {
       gated <- dens(
-        gates_coordinates = utils::read.csv(file.path(input, "flowcytometer", "gates_coordinates.csv")),
-        fsa = file.path(file.path(output, "flowcytometer"), paste0("flowcytometer_fsa_ungated.", plate, ".rds")),
-        flow.data = file.path(file.path(output, "flowcytometer"), paste0("flowcytometer_ungated.", plate, ".rds"))
+        gates_coordinates = gates_coordinates,
+        fsa = fsa,
+        flow.data = flow.data
       )
     }
     # SAVE --------------------------------------------------------------------
@@ -133,7 +140,11 @@ extractor_flowcytometer_density <- function(
     plates,
     gate_plate,
     input = input,
-    output = output
+    output = output,
+    use_H = use_H,
+    gates_coordinates,
+    fsa = fsa,
+    flow.data = flow.data
   )
 
   # Finalise ----------------------------------------------------------------
@@ -172,7 +183,12 @@ extractor_flowcytometer_density <- function(
   message("########################################################")
 
   if (dens_back) {
-    return(flow.data)
+    density <- NULL
+    for (plate in plates) {
+      fdp <- readRDS(file.path(add_path, paste0("flowcytometer_density.", plate, ".rds")))
+      density <- rbind(density, fdp)
+    }
+    return(density)
   } else {
     invisible(TRUE)
   }

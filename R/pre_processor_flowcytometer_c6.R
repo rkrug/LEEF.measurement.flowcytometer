@@ -18,7 +18,6 @@ pre_processor_flowcytometer_c6 <- function(
 ) {
   add_path <- file.path(output, "flowcytometer")
   dir.create(add_path, recursive = TRUE, showWarnings = FALSE)
-  loggit::set_logfile(file.path(add_path, "flowcytometer.log"))
 
   ##
   message("########################################################")
