@@ -53,8 +53,9 @@ extract_traits <- function(
   traits <- function(
     input,
     particles,
-    wellid_keyword
-  )  {
+    wellid_keyword,
+    gates_coordinates
+  ) {
     # extraction function -----------------------------------------------------
 
     extr_traits <- function(
@@ -146,7 +147,7 @@ extract_traits <- function(
     }
     if ("algae" %in% particles){
       message("   gating algae ...")
-      result$algae <- extr_traits(Subset(fsa,  gates$algae$algae_gate), wellid_keyword = wellid_keyword)
+      result$algae <- extr_traits(Subset(fsa, gates$algae$algae_gate), wellid_keyword = wellid_keyword)
     }
 
     result <- lapply(
@@ -176,7 +177,7 @@ extract_traits <- function(
 
   # Do the trait extraction --------------------------------------------
 
-  results <- traits(input, particles, wellid_keyword)
+  results <- traits(input, particles, wellid_keyword, gates_coordinates = gates_coordinates)
 
   # Finalize ----------------------------------------------------------------
 
