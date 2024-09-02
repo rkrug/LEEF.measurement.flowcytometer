@@ -23,7 +23,8 @@ pre_processor_flowcytometer <- function(
 
   add_path <- file.path(output, "flowcytometer")
   dir.create(add_path, recursive = TRUE, showWarnings = FALSE)
-  loggit::set_logfile(file.path(add_path, "flowcytometer.log"))
+  log.file <- tempfile(pattern="flowcytometer.", tmpdir = add_path, fileext = ".log")
+  loggit::set_logfile(log.file)
 
   ##
   message("########################################################")
