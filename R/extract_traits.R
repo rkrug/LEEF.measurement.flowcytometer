@@ -128,7 +128,7 @@ extract_traits <- function(
 
         algae_pop <- Subset(fsa, gates$algae$algae_gate)
 
-        traits$algae <- extr_traits(bacteria_pop, wellid_keyword = wellid_keyword, timestamp = timestamp)
+        traits$algae <- extr_traits(algae_pop, wellid_keyword = wellid_keyword, timestamp = timestamp)
 
         return(traits)
     }
